@@ -2,5 +2,10 @@
 
 </header>
 <main>
-  <wtiii-zone-column [id]="'1'" />
+  @for (zoneId of selectedZones().keys(); track zoneId) {
+    <wtiii-zone-column [id]="zoneId" />
+  }
+  <div class="add-column">
+    <button type="button" (click)="add()">Add</button>
+  </div>
 </main>

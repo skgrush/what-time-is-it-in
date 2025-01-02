@@ -1,8 +1,8 @@
-import { Component, DestroyRef, inject, input, OnInit } from '@angular/core';
-import { ZoneService } from '../zone-service/zone.service';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { KeyValuePipe } from '@angular/common';
+import { ITimeZoneName, RegionZoneMapping } from '../types/region-zone-mapping';
 
 @Component({
   selector: 'wtiii-zone-picker',
@@ -11,21 +11,13 @@ import { KeyValuePipe } from '@angular/common';
     KeyValuePipe,
   ],
   templateUrl: './zone-picker.component.html',
-  styleUrl: './zone-picker.component.scss'
+  styleUrl: './zone-picker.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ZonePickerComponent implements OnInit {
-  readonly #destroyRef = inject(DestroyRef);
-  readonly #zoneService = inject(ZoneService);
+export class ZonePickerComponent {
 
-  readonly id = input.required();
+  public readonly id = input.required<string>();
+  public readonly zoneFormControl = input.required<FormControl<ITimeZoneName | null>>();
+  public readonly allZones = input.required<RegionZoneMapping>();
 
-  protected readonly allZones = toSignal(this.#zoneService.allZonesByRegion$, { requireSync: true });
-
-  protected readonly control = new FormControl<string | null>(null);
-
-  ngOnInit(): void {
-    this.control.valueChanges.pipe(
-      takeUntilDestroyed(this.#destroyRef),
-    ).subscribe()
-  }
 }

@@ -1,1 +1,7 @@
-<wtiii-zone-picker [id]="id" />
+<button type="button" (click)="delete()" [disabled]="!canDelete()">Delete</button>
+
+<wtiii-zone-picker
+  [id]="id()"
+  [zoneFormControl]="zoneFormControl"
+  [allZones]="allZones()"
+/>

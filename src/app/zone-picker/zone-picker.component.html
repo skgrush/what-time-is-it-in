@@ -1,4 +1,4 @@
-<select [formControl]="control">
+<select [formControl]="zoneFormControl()">
   @for (regionZonesPair of allZones() | keyvalue; track regionZonesPair.key) {
     <optgroup [label]="regionZonesPair.key">
       @for (zone of regionZonesPair.value; track zone) {
