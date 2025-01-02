@@ -1,0 +1,9 @@
+<select [formControl]="control">
+  @for (regionZonesPair of allZones() | keyvalue; track regionZonesPair.key) {
+    <optgroup [label]="regionZonesPair.key">
+      @for (zone of regionZonesPair.value; track zone) {
+        <option [value]="zone">{{ zone }}</option>
+      }
+    </optgroup>
+  }
+</select>

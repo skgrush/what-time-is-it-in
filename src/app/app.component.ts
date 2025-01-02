@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ZoneColumnComponent } from './zone-column/zone-column.component';
 
 @Component({
-  selector: 'app-root',
-  imports: [RouterOutlet],
+  selector: 'wtiii-root',
+  imports: [ZoneColumnComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
