@@ -5,9 +5,7 @@
   @for (zoneId of selectedZones().keys(); track zoneId) {
     <wtiii-zone-column [columnId]="zoneId" />
   }
-  <div class="add-column">
-    <button type="button" (click)="add()">Add</button>
-  </div>
+  <wtiii-add-zone-column />
 </main>
 
 <datalist wtiii-zone-picker-options></datalist>

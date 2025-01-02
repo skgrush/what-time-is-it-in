@@ -4,4 +4,5 @@
 main {
   display: grid;
   grid-template-columns: repeat(auto-fill, zones.$zone-column-width);
+  grid-column-gap: var(--gap-1);
 }

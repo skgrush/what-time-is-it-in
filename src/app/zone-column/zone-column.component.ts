@@ -8,7 +8,7 @@ import {
   Signal,
 } from '@angular/core';
 import { ZonePickerComponent } from '../zone-picker/zone-picker.component';
-import { AbstractControl, FormControl, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, ValidatorFn } from '@angular/forms';
 import { ITimeZoneName } from '../types/region-zone-mapping';
 import { ZoneService } from '../zone-service/zone.service';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -17,6 +17,7 @@ import { INTL_LOCALE } from '../tokens/intl-locale';
 import { JsonPipe } from '@angular/common';
 import { map } from 'rxjs';
 import { VerticalClockComponent } from '../vertical-clock/vertical-clock.component';
+import { DeleteButtonComponent } from '../buttons/delete-button/delete-button.component';
 
 @Component({
   selector: 'wtiii-zone-column',
@@ -24,6 +25,7 @@ import { VerticalClockComponent } from '../vertical-clock/vertical-clock.compone
     ZonePickerComponent,
     JsonPipe,
     VerticalClockComponent,
+    DeleteButtonComponent,
   ],
   templateUrl: './zone-column.component.html',
   styleUrl: './zone-column.component.scss',
@@ -52,7 +54,7 @@ export class ZoneColumnComponent {
   protected readonly zonePickerOptionsId = this.#zoneService.zonePickerOptionsId;
 
   protected readonly zoneFormControl = new FormControl<ITimeZoneName | null>(null, {
-    validators: [Validators.required, this.timeZoneValidator],
+    validators: [this.timeZoneValidator],
   });
   readonly #zoneFormControlValueChangedValid = toSignal(this.zoneFormControl.valueChanges.pipe(
     map(value => {

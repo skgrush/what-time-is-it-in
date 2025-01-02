@@ -1,8 +1,12 @@
 
+$indicator-size: 4px;
+
 :host {
   display: grid;
   overflow: hidden;
   height: calc(12 * var(--hour-height-px));
+
+  width: 100%;
 
   grid-template-areas: 'center';
 
@@ -13,17 +17,17 @@
     grid-template-areas: 'center';
     height: 0;
     width: 100%;
-    margin-top: var(--hours-offset-px);
+    margin-top: calc(var(--hours-offset-px) - #{$indicator-size});
     .now-indicator-line {
       grid-area: center;
       align-self: center;
-      border-top: 2px solid red;
+      border-top: 2px solid var(--accent-color);
     }
     .now-indicator-circle {
       grid-area: center;
       justify-self: start;
-      border-radius: 2px;
-      border: 2px solid red;
+      border-radius: $indicator-size;
+      border: $indicator-size solid var(--accent-color);
     }
   }
 
