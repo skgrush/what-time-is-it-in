@@ -1,0 +1,14 @@
+
+<div class="now-indicator top">
+  <div class="now-indicator-circle"></div>
+  <div class="now-indicator-line"></div>
+</div>
+
+<div class="clock-container">
+  @for(hourTick of hourTicks; track hourTick) {
+    <time class="hour-block" [dateTime]="hourTick + ':00'">
+      <div class="hour-divider"></div>
+      <span class="hour-block-label">{{ hourTick }}</span>
+    </time>
+  }
+</div>

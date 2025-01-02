@@ -1,0 +1,57 @@
+
+:host {
+  display: grid;
+  overflow: hidden;
+  height: calc(12 * var(--hour-height-px));
+
+  grid-template-areas: 'center';
+
+  .now-indicator {
+    grid-area: center;
+
+    display: grid;
+    grid-template-areas: 'center';
+    height: 0;
+    width: 100%;
+    margin-top: var(--hours-offset-px);
+    .now-indicator-line {
+      grid-area: center;
+      align-self: center;
+      border-top: 2px solid red;
+    }
+    .now-indicator-circle {
+      grid-area: center;
+      justify-self: start;
+      border-radius: 2px;
+      border: 2px solid red;
+    }
+  }
+
+  .clock-container {
+    grid-area: center;
+
+    display: grid;
+    grid-template-columns: 1fr;
+
+    margin-top: calc( var(--top-offset-px) + var(--hours-offset-px));
+
+    //grid-template-rows: repeat(auto-fill, );
+
+    .hour-block {
+      height: var(--hour-height-px);
+      display: grid;
+      grid-template-areas: 'center';
+
+      .hour-divider {
+        grid-area: center;
+
+        height: 0;
+        border-top: 2px double lightgray;
+      }
+      .hour-block-label {
+        grid-area: center;
+
+      }
+    }
+  }
+}

@@ -16,12 +16,14 @@ import { ColumnIdType } from '../types/zone-info';
 import { INTL_LOCALE } from '../tokens/intl-locale';
 import { JsonPipe } from '@angular/common';
 import { distinctUntilChanged } from 'rxjs';
+import { VerticalClockComponent } from '../vertical-clock/vertical-clock.component';
 
 @Component({
   selector: 'wtiii-zone-column',
   imports: [
     ZonePickerComponent,
     JsonPipe,
+    VerticalClockComponent,
   ],
   templateUrl: './zone-column.component.html',
   styleUrl: './zone-column.component.scss',
@@ -43,7 +45,6 @@ export class ZoneColumnComponent {
   protected readonly allZones = this.#zoneService.allZonesByRegion;
 
   protected readonly selectedZone = computed(() => {
-    // const valueChanged = this.#zoneFormControlValueChanged();
     const id = this.columnId();
     const selectedZonesInfo = this.#zoneService.selectedZonesInfo();
 
