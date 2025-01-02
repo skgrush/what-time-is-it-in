@@ -1,7 +1,36 @@
 <button type="button" (click)="delete()" [disabled]="!canDelete()">Delete</button>
 
 <wtiii-zone-picker
-  [id]="id()"
+  [columnId]="columnId()"
   [zoneFormControl]="zoneFormControl"
   [allZones]="allZones()"
 />
+
+<dl [attr.data-zone]="selectedZone() | json">
+
+  @if (time()) {
+    <dt>Local time</dt>
+    <dd>
+      <time [dateTime]="time()">{{ time() }}</time>
+    </dd>
+  }
+  @if (offset()) {
+    <dt>Offset</dt>
+    <dd>
+      <time [dateTime]="offset()">{{ offset() }}</time>
+    </dd>
+  }
+  @if (timeZoneName()) {
+    <dt>Time Zone</dt>
+    <dd>
+      <time [dateTime]="timeZoneName()">{{ timeZoneName() }}</time>
+    </dd>
+  }
+
+  @if (timeInSeconds()) {
+    <dt>Time in seconds</dt>
+    <dd>
+      <var>{{ timeInSeconds() }}</var>
+    </dd>
+  }
+</dl>

@@ -3,7 +3,7 @@
 </header>
 <main>
   @for (zoneId of selectedZones().keys(); track zoneId) {
-    <wtiii-zone-column [id]="zoneId" />
+    <wtiii-zone-column [columnId]="zoneId" />
   }
   <div class="add-column">
     <button type="button" (click)="add()">Add</button>

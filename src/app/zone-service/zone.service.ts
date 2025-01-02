@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { ITimeZoneName, RegionZoneMapping } from '../types/region-zone-mapping';
-import { IdType, IZoneInfo } from '../types/zone-info';
+import { ColumnIdType, IZoneInfo } from '../types/zone-info';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +8,9 @@ import { IdType, IZoneInfo } from '../types/zone-info';
 export class ZoneService {
 
   #currentIdNumber = 0;
+
+  readonly #renderDate = signal(new Date());
+  public renderDate = this.#renderDate.asReadonly();
 
   // TODO: does this work to create a lazy signal? Maybe we will need an observable with a delay to improve initial-load
   public readonly allZonesByRegion = computed(() => {
@@ -20,7 +23,7 @@ export class ZoneService {
     return Object.freeze(grouped) as RegionZoneMapping;
   });
 
-  readonly #selectedZonesInfo = signal<ReadonlyMap<IdType, IZoneInfo | undefined>>(new Map());
+  readonly #selectedZonesInfo = signal<ReadonlyMap<ColumnIdType, IZoneInfo | undefined>>(new Map());
   public selectedZonesInfo = this.#selectedZonesInfo.asReadonly();
 
   public readonly initialId = this.addZone();
@@ -36,7 +39,7 @@ export class ZoneService {
     return newId;
   }
 
-  public changeZoneInfo(id: IdType, timeZoneName: ITimeZoneName | null) {
+  public changeZoneInfo(id: ColumnIdType, timeZoneName: ITimeZoneName | null) {
     const timeZoneRegion = timeZoneName?.split('/')[0];
     const entry = !timeZoneRegion
       ? undefined
@@ -46,7 +49,7 @@ export class ZoneService {
       } satisfies IZoneInfo;
 
     this.#selectedZonesInfo.update(existingMap => {
-      if (existingMap.get(id)?.timeZoneName ?? undefined === timeZoneName) {
+      if ((existingMap.get(id)?.timeZoneName ?? null) === timeZoneName) {
         return existingMap;
       }
 
@@ -62,7 +65,7 @@ export class ZoneService {
    *
    * Fails if the entry is not in the map, or if it is the last entry in the map.
    */
-  public deleteZoneInfo(id: IdType) {
+  public deleteZoneInfo(id: ColumnIdType) {
     // currently does not decrement id counter
 
     this.#selectedZonesInfo.update(existingMap => {
