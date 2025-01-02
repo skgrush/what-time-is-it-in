@@ -8,14 +8,14 @@ import {
   Signal,
 } from '@angular/core';
 import { ZonePickerComponent } from '../zone-picker/zone-picker.component';
-import { FormControl } from '@angular/forms';
+import { AbstractControl, FormControl, ValidatorFn, Validators } from '@angular/forms';
 import { ITimeZoneName } from '../types/region-zone-mapping';
 import { ZoneService } from '../zone-service/zone.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ColumnIdType } from '../types/zone-info';
 import { INTL_LOCALE } from '../tokens/intl-locale';
 import { JsonPipe } from '@angular/common';
-import { distinctUntilChanged } from 'rxjs';
+import { map } from 'rxjs';
 import { VerticalClockComponent } from '../vertical-clock/vertical-clock.component';
 
 @Component({
@@ -37,12 +37,31 @@ export class ZoneColumnComponent {
   readonly #zoneService = inject(ZoneService);
   readonly #intlLocale = inject(INTL_LOCALE);
 
+  public timeZoneValidator: ValidatorFn = (control: AbstractControl<string | null>) => {
+    if (control.value && !this.#zoneService.allZones.has(control.value)) {
+      return {
+        'invalidTimeZone': true,
+      };
+    }
+
+    return null;
+  }
+
   public readonly columnId = input.required<ColumnIdType>();
 
-  protected readonly zoneFormControl = new FormControl<ITimeZoneName | null>(null);
-  readonly #zoneFormControlValueChanged = toSignal(this.zoneFormControl.valueChanges.pipe(distinctUntilChanged()));
+  protected readonly zonePickerOptionsId = this.#zoneService.zonePickerOptionsId;
 
-  protected readonly allZones = this.#zoneService.allZonesByRegion;
+  protected readonly zoneFormControl = new FormControl<ITimeZoneName | null>(null, {
+    validators: [Validators.required, this.timeZoneValidator],
+  });
+  readonly #zoneFormControlValueChangedValid = toSignal(this.zoneFormControl.valueChanges.pipe(
+    map(value => {
+      if (this.zoneFormControl.valid && !!value) {
+        return value;
+      }
+      return null;
+    })
+  ))
 
   protected readonly selectedZone = computed(() => {
     const id = this.columnId();
@@ -133,9 +152,9 @@ export class ZoneColumnComponent {
 
   readonly #effect = effect(() => {
     const id = this.columnId();
-    const formControlChanged = this.#zoneFormControlValueChanged();
+    const formControlValue = this.#zoneFormControlValueChangedValid();
 
-    this.#zoneService.changeZoneInfo(id, formControlChanged ?? null);
+    this.#zoneService.changeZoneInfo(id, formControlValue ?? null);
   });
 
   delete() {

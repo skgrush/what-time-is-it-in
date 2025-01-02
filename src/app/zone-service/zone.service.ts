@@ -12,9 +12,13 @@ export class ZoneService {
   readonly #renderDate = signal(new Date());
   public renderDate = this.#renderDate.asReadonly();
 
+  public readonly zonePickerOptionsId = 'zone-picker-options';
+
+  public readonly allZones: ReadonlySet<string> = new Set(Intl.supportedValuesOf('timeZone'));
+
   // TODO: does this work to create a lazy signal? Maybe we will need an observable with a delay to improve initial-load
   public readonly allZonesByRegion = computed(() => {
-    const timeZones = Intl.supportedValuesOf('timeZone');
+    const timeZones = this.allZones;
 
     const grouped = Object.groupBy(timeZones, timeZone => timeZone.split('/', 1)[0])
     for (let k in grouped) {
