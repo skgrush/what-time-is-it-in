@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { ZoneService } from '../zone-service/zone.service';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
 
@@ -16,10 +16,16 @@ import { startWith } from 'rxjs';
 export class HeaderComponent {
   readonly #zoneService = inject(ZoneService);
 
-  protected readonly dateControl = new FormControl(this.#toDateTimeLocalString(this.#zoneService.renderDate()), {
-    validators: [Validators.required],
+  protected readonly form = new FormGroup({
+    date: new FormControl(this.#toDateTimeLocalString(this.#zoneService.renderDate()), {
+      validators: [Validators.required],
+    }),
   });
-  readonly #dateControlChanged = toSignal(this.dateControl.valueChanges.pipe(startWith(this.dateControl.value)));
+  readonly #dateControlChanged = toSignal(this.form.controls.date.valueChanges.pipe(startWith(this.form.controls.date.value)));
+
+  resetDate() {
+    this.#zoneService.renderDate.set(new Date());
+  }
 
   readonly #dateFormChangeEffect = effect(() => {
     const dateString = this.#dateControlChanged();
@@ -38,10 +44,10 @@ export class HeaderComponent {
 
     const globalDateString = this.#toDateTimeLocalString(globalDate);
 
-    if (globalDateString === this.dateControl.value) {
+    if (globalDateString === this.form.controls.date.value) {
       return;
     }
-    this.dateControl.setValue(globalDateString);
+    this.form.controls.date.setValue(globalDateString);
   });
 
   #toDateTimeLocalString(d: Date) {

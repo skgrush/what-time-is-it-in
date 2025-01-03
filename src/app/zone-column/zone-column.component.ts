@@ -15,7 +15,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ColumnIdType } from '../types/zone-info';
 import { INTL_LOCALE } from '../tokens/intl-locale';
 import { JsonPipe } from '@angular/common';
-import { map } from 'rxjs';
+import { map, skip } from 'rxjs';
 import { VerticalClockComponent } from '../vertical-clock/vertical-clock.component';
 import { DeleteButtonComponent } from '../buttons/delete-button/delete-button.component';
 
@@ -57,13 +57,14 @@ export class ZoneColumnComponent {
     validators: [this.timeZoneValidator],
   });
   readonly #zoneFormControlValueChangedValid = toSignal(this.zoneFormControl.valueChanges.pipe(
+    skip(1),
     map(value => {
       if (this.zoneFormControl.valid && !!value) {
         return value;
       }
       return null;
     })
-  ))
+  ));
 
   protected readonly selectedZone = computed(() => {
     const id = this.columnId();
@@ -152,9 +153,28 @@ export class ZoneColumnComponent {
     return id !== initialId;
   });
 
+  readonly #columnIdEffect = effect(() => {
+    const id = this.columnId();
+
+    debugger;
+
+    // check if this column already has a value stored
+    const stored = this.#zoneService.selectedZonesInfo().get(id);
+
+    if (!stored) {
+      return;
+    }
+
+    this.zoneFormControl.reset(stored.timeZoneName);
+  });
+
   readonly #effect = effect(() => {
     const id = this.columnId();
     const formControlValue = this.#zoneFormControlValueChangedValid();
+
+    if (formControlValue === undefined) {
+      return;
+    }
 
     this.#zoneService.changeZoneInfo(id, formControlValue ?? null);
   });

@@ -9,6 +9,7 @@
 <form (submit)="$event.preventDefault()">
   <label>
     Your local time
-    <input [formControl]="dateControl" type="datetime-local" />
+    <input [formControl]="form.controls.date" type="datetime-local" />
   </label>
+  <button type="button" (click)="resetDate()">Reset</button>
 </form>

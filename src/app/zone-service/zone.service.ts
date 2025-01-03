@@ -9,8 +9,11 @@ export class ZoneService {
 
   #currentIdNumber = 0;
 
-  readonly #renderDate = signal(new Date());
-  public renderDate = this.#renderDate.asReadonly();
+  readonly myIanaTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  readonly renderDate = signal(new Date(), {
+    equal: (a, b) => +a === +b,
+  });
 
   public readonly zonePickerOptionsId = 'zone-picker-options';
 
@@ -30,7 +33,10 @@ export class ZoneService {
   readonly #selectedZonesInfo = signal<ReadonlyMap<ColumnIdType, IZoneInfo | undefined>>(new Map());
   public selectedZonesInfo = this.#selectedZonesInfo.asReadonly();
 
-  public readonly initialId = this.addZone();
+  public readonly initialId = this.changeZoneInfo(
+    `zone-${++this.#currentIdNumber}` as const,
+    this.myIanaTimezone
+  );
 
   public addZone() {
     const newId = `zone-${++this.#currentIdNumber}` as const;
@@ -44,6 +50,7 @@ export class ZoneService {
   }
 
   public changeZoneInfo(id: ColumnIdType, timeZoneName: ITimeZoneName | null) {
+    debugger;
     const timeZoneRegion = timeZoneName?.split('/')[0];
     const entry = !timeZoneRegion
       ? undefined
@@ -62,6 +69,8 @@ export class ZoneService {
       newMap.set(id, entry);
       return newMap;
     });
+
+    return id;
   }
 
   /**
