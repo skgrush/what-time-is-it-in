@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
-import { AddButtonComponent } from '../../buttons/add-button/add-button.component';
 import { ZoneService } from '../../zone-service/zone.service';
+import { IconButtonComponent } from '../../buttons/icon-button/icon-button.component';
 
 @Component({
   selector: 'wtiii-add-zone-column',
   imports: [
-    AddButtonComponent,
+    IconButtonComponent,
   ],
   templateUrl: './add-zone-column.component.html',
   styleUrls: [

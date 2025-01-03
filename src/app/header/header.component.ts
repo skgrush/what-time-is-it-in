@@ -3,13 +3,13 @@ import { ZoneService } from '../zone-service/zone.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
-import { CopyButtonComponent } from '../buttons/copy-button/copy-button.component';
+import { IconButtonComponent } from '../buttons/icon-button/icon-button.component';
 
 @Component({
   selector: 'header[wtiii-header]',
   imports: [
     ReactiveFormsModule,
-    CopyButtonComponent,
+    IconButtonComponent,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',

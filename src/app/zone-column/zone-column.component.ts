@@ -17,7 +17,7 @@ import { INTL_LOCALE } from '../tokens/intl-locale';
 import { JsonPipe } from '@angular/common';
 import { map, skip } from 'rxjs';
 import { VerticalClockComponent } from '../vertical-clock/vertical-clock.component';
-import { DeleteButtonComponent } from '../buttons/delete-button/delete-button.component';
+import { IconButtonComponent } from '../buttons/icon-button/icon-button.component';
 
 @Component({
   selector: 'wtiii-zone-column',
@@ -25,7 +25,7 @@ import { DeleteButtonComponent } from '../buttons/delete-button/delete-button.co
     ZonePickerComponent,
     JsonPipe,
     VerticalClockComponent,
-    DeleteButtonComponent,
+    IconButtonComponent,
   ],
   templateUrl: './zone-column.component.html',
   styleUrl: './zone-column.component.scss',
