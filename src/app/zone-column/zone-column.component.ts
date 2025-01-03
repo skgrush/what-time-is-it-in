@@ -39,7 +39,7 @@ export class ZoneColumnComponent {
   readonly #zoneService = inject(ZoneService);
   readonly #intlLocale = inject(INTL_LOCALE);
 
-  public timeZoneValidator: ValidatorFn = (control: AbstractControl<string | null>) => {
+  public timeZoneValidator: ValidatorFn = (control: AbstractControl<ITimeZoneName | null>) => {
     if (control.value && !this.#zoneService.allZones.has(control.value)) {
       return {
         'invalidTimeZone': true,

@@ -1,17 +1,17 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { ITimeZoneName, RegionZoneMapping } from '../types/region-zone-mapping';
 import { ColumnIdType, IZoneInfo } from '../types/zone-info';
-import { LOCATION } from '../tokens/location';
+import { ImportExportService } from '../import-export-service/import-export.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ZoneService {
-  readonly #location = inject(LOCATION);
+  readonly #importExportService = inject(ImportExportService);
 
   #currentIdNumber = 0;
 
-  readonly myIanaTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  readonly myIanaTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone as ITimeZoneName;
 
   readonly renderDate = signal(new Date(), {
     equal: (a, b) => +a === +b,
@@ -19,7 +19,7 @@ export class ZoneService {
 
   public readonly zonePickerOptionsId = 'zone-picker-options';
 
-  public readonly allZones: ReadonlySet<string> = new Set(Intl.supportedValuesOf('timeZone'));
+  public readonly allZones = new Set(Intl.supportedValuesOf('timeZone')).add('Etc/UTC') as ReadonlySet<ITimeZoneName>;
 
   // TODO: does this work to create a lazy signal? Maybe we will need an observable with a delay to improve initial-load
   public readonly allZonesByRegion = computed(() => {
@@ -35,42 +35,23 @@ export class ZoneService {
   readonly #selectedZonesInfo = signal(this.#selectedZonesInitializer());
   public selectedZonesInfo = this.#selectedZonesInfo.asReadonly();
 
-  static readonly queryParamZone = 'zone[]';
-
   #selectedZonesInitializer(): ReadonlyMap<ColumnIdType, IZoneInfo | undefined> {
-    if (this.#location?.search.includes(`${ZoneService.queryParamZone}=`)) {
-      const queryParams = new URLSearchParams(this.#location.search);
+    const validatedZones = this.#importExportService.getValidZonesFromQueryParams(this.allZones);
 
-      const unvalidatedZones = queryParams.getAll(ZoneService.queryParamZone);
-      const validatedZones = unvalidatedZones.filter(z => this.allZones.has(z));
-
-      if (unvalidatedZones.length !== validatedZones.length) {
-        console.error('Query param included invalid zone(s)', unvalidatedZones.filter(v => !validatedZones.includes(v)));
-      }
-
-      if (validatedZones.length > 0) {
-        return new Map(
-          validatedZones.map(timeZoneName => [
-            this.#generateNextId(),
-            {
-              timeZoneName,
-              timeZoneRegion: ZoneService.getRegionFromTimeZone(timeZoneName),
-            },
-          ]),
-        );
-      }
+    if (validatedZones.length === 0) {
+      // fallback behavior, fill in the current timezone if none others exist
+      validatedZones.push(this.myIanaTimezone);
     }
 
-    // fallback
-    return new Map([
-      [
+    return new Map(
+      validatedZones.map(timeZoneName => [
         this.#generateNextId(),
         {
-          timeZoneName: this.myIanaTimezone,
-          timeZoneRegion: ZoneService.getRegionFromTimeZone(this.myIanaTimezone),
+          timeZoneName,
+          timeZoneRegion: ZoneService.getRegionFromTimeZone(timeZoneName),
         },
-      ],
-    ]);
+      ]),
+    );
   }
 
   #generateNextId(): ColumnIdType {
