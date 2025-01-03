@@ -1,0 +1,14 @@
+<h1>
+  <span>What</span>
+  <span>Time</span>
+  <span>Is</span>
+  <span>It</span>
+  <span>In ...?</span>
+</h1>
+
+<form (submit)="$event.preventDefault()">
+  <label>
+    Your local time
+    <input [formControl]="dateControl" type="datetime-local" />
+  </label>
+</form>

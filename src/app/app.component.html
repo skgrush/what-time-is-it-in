@@ -1,11 +1,16 @@
-<header>
+<header wtiii-header></header>
 
-</header>
 <main>
   @for (zoneId of selectedZones().keys(); track zoneId) {
     <wtiii-zone-column [columnId]="zoneId" />
   }
   <wtiii-add-zone-column />
+
+  <datalist wtiii-zone-picker-options></datalist>
 </main>
 
-<datalist wtiii-zone-picker-options></datalist>
+<footer>
+  <div class="footer-content">
+
+  </div>
+</footer>

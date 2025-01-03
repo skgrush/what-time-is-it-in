@@ -1,0 +1,24 @@
+:host {
+  display: grid;
+  grid-template-areas:
+    "h1"
+    "form"
+  ;
+  grid-template-columns: 1fr;
+
+  &>h1 {
+    display: block;
+
+    &>span {
+      display: inline-block;
+
+      &::after {
+        content: ' ';
+        display: inline-block;
+        width: 0.4em;
+      }
+    }
+  }
+
+
+}
