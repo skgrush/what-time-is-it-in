@@ -1,11 +1,13 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { ITimeZoneName, RegionZoneMapping } from '../types/region-zone-mapping';
 import { ColumnIdType, IZoneInfo } from '../types/zone-info';
+import { LOCATION } from '../tokens/location';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ZoneService {
+  readonly #location = inject(LOCATION);
 
   #currentIdNumber = 0;
 
@@ -23,23 +25,60 @@ export class ZoneService {
   public readonly allZonesByRegion = computed(() => {
     const timeZones = this.allZones;
 
-    const grouped = Object.groupBy(timeZones, timeZone => timeZone.split('/', 1)[0])
+    const grouped = Object.groupBy(timeZones, ZoneService.getRegionFromTimeZone)
     for (let k in grouped) {
       Object.freeze(grouped[k]);
     }
     return Object.freeze(grouped) as RegionZoneMapping;
   });
 
-  readonly #selectedZonesInfo = signal<ReadonlyMap<ColumnIdType, IZoneInfo | undefined>>(new Map());
+  readonly #selectedZonesInfo = signal(this.#selectedZonesInitializer());
   public selectedZonesInfo = this.#selectedZonesInfo.asReadonly();
 
-  public readonly initialId = this.changeZoneInfo(
-    `zone-${++this.#currentIdNumber}` as const,
-    this.myIanaTimezone
-  );
+  static readonly queryParamZone = 'zone[]';
+
+  #selectedZonesInitializer(): ReadonlyMap<ColumnIdType, IZoneInfo | undefined> {
+    if (this.#location?.search.includes(`${ZoneService.queryParamZone}=`)) {
+      const queryParams = new URLSearchParams(this.#location.search);
+
+      const unvalidatedZones = queryParams.getAll(ZoneService.queryParamZone);
+      const validatedZones = unvalidatedZones.filter(z => this.allZones.has(z));
+
+      if (unvalidatedZones.length !== validatedZones.length) {
+        console.error('Query param included invalid zone(s)', unvalidatedZones.filter(v => !validatedZones.includes(v)));
+      }
+
+      if (validatedZones.length > 0) {
+        return new Map(
+          validatedZones.map(timeZoneName => [
+            this.#generateNextId(),
+            {
+              timeZoneName,
+              timeZoneRegion: ZoneService.getRegionFromTimeZone(timeZoneName),
+            },
+          ]),
+        );
+      }
+    }
+
+    // fallback
+    return new Map([
+      [
+        this.#generateNextId(),
+        {
+          timeZoneName: this.myIanaTimezone,
+          timeZoneRegion: ZoneService.getRegionFromTimeZone(this.myIanaTimezone),
+        },
+      ],
+    ]);
+  }
+
+  #generateNextId(): ColumnIdType {
+    return `zone-column-${++this.#currentIdNumber}` as const;
+  }
 
   public addZone() {
-    const newId = `zone-${++this.#currentIdNumber}` as const;
+    const newId = this.#generateNextId();
     this.#selectedZonesInfo.update(existingMap => {
       const newMap = new Map(existingMap);
       newMap.set(newId, undefined);
@@ -50,9 +89,8 @@ export class ZoneService {
   }
 
   public changeZoneInfo(id: ColumnIdType, timeZoneName: ITimeZoneName | null) {
-    debugger;
-    const timeZoneRegion = timeZoneName?.split('/')[0];
-    const entry = !timeZoneRegion
+    const timeZoneRegion = timeZoneName ? ZoneService.getRegionFromTimeZone(timeZoneName) : undefined;
+    const entry = !timeZoneRegion || !timeZoneName
       ? undefined
       : {
         timeZoneName,
@@ -89,5 +127,11 @@ export class ZoneService {
       }
       return newMap;
     });
+  }
+
+  public static getRegionFromTimeZone<TR extends string>(
+    zone: `${TR}/${string}` | string & {}
+  ): TR {
+    return zone.split('/', 1)[0] as TR;
   }
 }

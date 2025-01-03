@@ -146,17 +146,14 @@ export class ZoneColumnComponent {
   });
 
   protected readonly canDelete = computed(() => {
-    const id = this.columnId();
-    const initialId = this.#zoneService.initialId;
+    // const id = this.columnId();
+    const selectedZones = this.#zoneService.selectedZonesInfo();
 
-
-    return id !== initialId;
+    return selectedZones.size > 1;
   });
 
   readonly #columnIdEffect = effect(() => {
     const id = this.columnId();
-
-    debugger;
 
     // check if this column already has a value stored
     const stored = this.#zoneService.selectedZonesInfo().get(id);
