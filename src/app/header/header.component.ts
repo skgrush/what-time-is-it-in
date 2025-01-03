@@ -3,11 +3,13 @@ import { ZoneService } from '../zone-service/zone.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
+import { CopyButtonComponent } from '../buttons/copy-button/copy-button.component';
 
 @Component({
   selector: 'header[wtiii-header]',
   imports: [
     ReactiveFormsModule,
+    CopyButtonComponent,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
@@ -25,6 +27,10 @@ export class HeaderComponent {
 
   resetDate() {
     this.#zoneService.renderDate.set(new Date());
+  }
+
+  copy() {
+    void this.#zoneService.copy();
   }
 
   readonly #dateFormChangeEffect = effect(() => {

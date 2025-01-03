@@ -3,6 +3,8 @@ import { ApplicationConfig, provideExperimentalZonelessChangeDetection } from '@
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { INTL_LOCALE } from './tokens/intl-locale';
 import { LOCATION } from './tokens/location';
+import { HISTORY } from './tokens/history';
+import { CLIPBOARD } from './tokens/clipboard';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -11,6 +13,14 @@ export const appConfig: ApplicationConfig = {
     {
       provide: LOCATION,
       useValue: globalThis.location,
+    },
+    {
+      provide: HISTORY,
+      useValue: globalThis.history,
+    },
+    {
+      provide: CLIPBOARD,
+      useValue: globalThis.navigator.clipboard,
     },
     {
       provide: INTL_LOCALE,

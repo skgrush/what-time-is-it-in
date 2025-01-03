@@ -58,6 +58,20 @@ export class ZoneService {
     return `zone-column-${++this.#currentIdNumber}` as const;
   }
 
+  public async copy() {
+    const zones = [...this.selectedZonesInfo().values()]
+      .map(z => z?.timeZoneName)
+      .filter(name => !!name);
+
+    const url = this.#importExportService.updatePageUrlWithZones(
+      zones
+    );
+
+    if (url) {
+      await this.#importExportService.copyUrlToClipboard(url);
+    }
+  }
+
   public addZone() {
     const newId = this.#generateNextId();
     this.#selectedZonesInfo.update(existingMap => {

@@ -1,23 +1,25 @@
 import { inject, Injectable } from '@angular/core';
 import { LOCATION } from '../tokens/location';
 import { ITimeZoneName } from '../types/region-zone-mapping';
+import { HISTORY } from '../tokens/history';
+import { CLIPBOARD } from '../tokens/clipboard';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImportExportService {
   readonly #location = inject(LOCATION);
+  readonly #history = inject(HISTORY);
+  readonly #clipboard = inject(CLIPBOARD);
 
-  static readonly queryParamZone = 'zone[]';
-
-  constructor() { }
+  static readonly queryParamZone = 'zone';
 
   /**
-   * Attempt to read zone[]= query params and filters them against the set of `allValidZones` passed in.
+   * Attempt to read zone= query params and filters them against the set of `allValidZones` passed in.
    *
    * If global location is unreachable (e.g. server-side), returns `[]`.
    */
-  getValidZonesFromQueryParams(allValidZones: ReadonlySet<string>) {
+  getValidZonesFromQueryParams(allValidZones: ReadonlySet<ITimeZoneName>) {
     if (!this.#location?.search.includes(`${ImportExportService.queryParamZone}=`)) {
       return [];
     }
@@ -32,5 +34,42 @@ export class ImportExportService {
     }
 
     return validatedZones;
+  }
+
+  updatePageUrlWithZones(zones: readonly ITimeZoneName[]) {
+    if (!this.#location) {
+      return;
+    }
+
+    const newPathString = '/?' + new URLSearchParams(
+      zones.map(zone => [
+        ImportExportService.queryParamZone,
+        zone
+      ])
+    );
+
+    const url = new globalThis.URL(newPathString, this.#location.origin);
+
+    if (this.#history) {
+      this.#history.pushState(undefined, '', url);
+    }
+
+    return url;
+  }
+
+  async copyUrlToClipboard(url: URL): Promise<boolean> {
+    return this.copyTextToClipboard(url.toString());
+  }
+
+  async copyTextToClipboard(text: string) {
+    if (!this.#clipboard) {
+      return false;
+    }
+    try {
+      await this.#clipboard.writeText(text);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
