@@ -50,12 +50,22 @@ export class HeaderComponent {
     this.form.controls.date.setValue(globalDateString);
   });
 
+  /**
+   * Convert a JS Date to a local ISO time, i.e. `yyyy-MM-ddTHH:mm:ss.fff` with NO timezone suffix.
+   * Unfortunately I know of no better mechanism for this without different tooling.
+   *
+   * @returns a local ISO time or null for invalid dates.
+   *
+   * @private
+   *
+   * @summary
+   * I...
+   *  1. truly hate JS Date
+   *  2. cannot wait for Temporal 🙏📅
+   *  3. would use Luxon if this weren't the only place I needed to do basically any date manipulation
+   */
   #toDateTimeLocalString(d: Date) {
     if (+d) {
-      // I:
-      //  1. truly hate JS Date
-      //  2. cannot wait for Temporal 🙏📅
-      //  3. would use Luxon if this weren't the only place I needed to do basically any date manipulation
       const year = d.getFullYear();
 
       return `${
