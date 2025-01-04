@@ -1,4 +1,4 @@
-<button wtiii-icon-button="Delete" (click)="canDelete && delete()" [disabled]="!canDelete()">X</button>
+<button wtiii-icon-button="Delete" (click)="canDelete() && delete()" [disabled]="!canDelete()">X</button>
 
 <wtiii-zone-picker
   [columnId]="columnId()"

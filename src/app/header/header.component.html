@@ -1,9 +1,29 @@
-<h1>
-  <span>What</span>
-  <span>Time</span>
-  <span>Is</span>
-  <span>It</span>
-  <span>In ...?</span>
+<h1 aria-description="What time is it in ...?">
+  <span class="reordered" aria-hidden="true">
+    <i [style.order]="11">s</i>
+    <i [style.order]=" 1">h</i>
+    <i [style.order]="13">i</i>
+    <i [style.order]="14">t</i>
+    <i [style.order]="19">.</i>
+    <i [style.order]=" 4">&nbsp;</i>
+    <i [style.order]=" 2" class="relower">A</i>
+    <i [style.order]="10" class="relower">I</i>
+    <i [style.order]="20">.</i>
+    <i [style.order]=" 9">&nbsp;</i>
+    <i [style.order]=" 3">t</i>
+    <i [style.order]=" 0" class="reupper">w</i>
+    <i [style.order]="16">i</i>
+    <i [style.order]="17">n</i>
+    <i [style.order]="21">.</i>
+    <i [style.order]="12">&nbsp;</i>
+    <i [style.order]=" 5">t</i>
+    <i [style.order]=" 6">i</i>
+    <i [style.order]=" 7">m</i>
+    <i [style.order]=" 8">e</i>
+    <i [style.order]="15">&nbsp;</i>
+    <i [style.order]="18">&nbsp;</i>
+    <i [style.order]="22">?</i>
+  </span>
 </h1>
 
 <form (submit)="$event.preventDefault()">
@@ -11,6 +31,6 @@
     Your local time
     <input [formControl]="form.controls.date" type="datetime-local" />
   </label>
-  <button type="button" (click)="resetDate()">Reset</button>
+  <button wtiii-icon-button="Reset time" (click)="resetDate()">↺</button>
   <button wtiii-icon-button="Copy" (click)="copy()">⤒</button>
 </form>

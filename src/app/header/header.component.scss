@@ -6,19 +6,27 @@
   ;
   grid-template-columns: 1fr;
 
-  &>h1 {
+  & > h1 {
     display: block;
 
-    &>span {
-      display: inline-block;
+    & > .reordered {
+      display: flex;
 
-      &::after {
-        content: ' ';
-        display: inline-block;
-        width: 0.4em;
+      & > i {
+        white-space: pre;
+
+        &.reupper {
+          text-transform: uppercase;
+        }
+        &.relower {
+          text-transform: lowercase;
+        }
       }
     }
   }
 
-
+  &>form {
+    display: flex;
+    gap: var(--gap-1);
+  }
 }
