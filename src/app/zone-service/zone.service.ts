@@ -1,17 +1,23 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { ITimeZoneName, RegionZoneMapping } from '../types/region-zone-mapping';
 import { ColumnIdType, IZoneInfo } from '../types/zone-info';
 import { ImportExportService } from '../import-export-service/import-export.service';
+import { isPlatformServer } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ZoneService {
   readonly #importExportService = inject(ImportExportService);
+  readonly #isServerSide = isPlatformServer(inject(PLATFORM_ID));
 
   #currentIdNumber = 0;
 
-  readonly myIanaTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone as ITimeZoneName;
+  readonly myIanaTimezone = (
+    this.#isServerSide
+      ? 'Etc/UTC'
+      : Intl.DateTimeFormat().resolvedOptions().timeZone
+  ) as ITimeZoneName;
 
   readonly renderDate = signal(new Date(), {
     equal: (a, b) => +a === +b,
@@ -19,7 +25,11 @@ export class ZoneService {
 
   public readonly zonePickerOptionsId = 'zone-picker-options';
 
-  public readonly allZones = new Set(Intl.supportedValuesOf('timeZone')).add('Etc/UTC') as ReadonlySet<ITimeZoneName>;
+  public readonly allZones = (
+    this.#isServerSide
+    ? new Set(['Etc/UTC'])
+    : new Set(Intl.supportedValuesOf('timeZone')).add('Etc/UTC')
+  )as ReadonlySet<ITimeZoneName>;
 
   // TODO: does this work to create a lazy signal? Maybe we will need an observable with a delay to improve initial-load
   public readonly allZonesByRegion = computed(() => {
