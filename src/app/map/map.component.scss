@@ -1,0 +1,25 @@
+:host {
+  display: grid;
+  overflow: hidden;
+
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "map"
+    "under";
+
+  & > img {
+    width: 100%;
+    grid-area: map;
+  }
+
+  & > .under-info {
+    grid-area: under;
+  }
+
+  & > .map-overlay-br {
+    grid-area: map;
+
+    justify-self: right;
+    align-self: end;
+  }
+}

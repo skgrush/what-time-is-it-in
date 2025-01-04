@@ -4,6 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
 import { IconButtonComponent } from '../buttons/icon-button/icon-button.component';
+import { MapOpenerService } from '../map/map-opener.service';
 
 @Component({
   selector: 'header[wtiii-header]',
@@ -17,6 +18,7 @@ import { IconButtonComponent } from '../buttons/icon-button/icon-button.componen
 })
 export class HeaderComponent {
   readonly #zoneService = inject(ZoneService);
+  readonly #mapOpenerService = inject(MapOpenerService);
 
   protected readonly form = new FormGroup({
     date: new FormControl(this.#toDateTimeLocalString(this.#zoneService.renderDate()), {
@@ -24,6 +26,10 @@ export class HeaderComponent {
     }),
   });
   readonly #dateControlChanged = toSignal(this.form.controls.date.valueChanges.pipe(startWith(this.form.controls.date.value)));
+
+  toggleMap() {
+    this.#mapOpenerService.isOpen.update(v => !v);
+  }
 
   resetDate() {
     this.#zoneService.renderDate.set(new Date());
@@ -33,28 +39,30 @@ export class HeaderComponent {
     void this.#zoneService.copy();
   }
 
-  readonly #dateFormChangeEffect = effect(() => {
-    const dateString = this.#dateControlChanged();
+  readonly #fx = {
+    dateFormChangeEffect: effect(() => {
+      const dateString = this.#dateControlChanged();
 
-    const date = dateString ? new Date(dateString) : null;
+      const date = dateString ? new Date(dateString) : null;
 
-    if (!date) {
-      return;
-    }
+      if (!date) {
+        return;
+      }
 
-    this.#zoneService.renderDate.set(date);
-  });
+      this.#zoneService.renderDate.set(date);
+    }),
 
-  readonly #globalDateChangeEffect = effect(() => {
-    const globalDate = this.#zoneService.renderDate();
+    globalDateChangeEffect: effect(() => {
+      const globalDate = this.#zoneService.renderDate();
 
-    const globalDateString = this.#toDateTimeLocalString(globalDate);
+      const globalDateString = this.#toDateTimeLocalString(globalDate);
 
-    if (globalDateString === this.form.controls.date.value) {
-      return;
-    }
-    this.form.controls.date.setValue(globalDateString);
-  });
+      if (globalDateString === this.form.controls.date.value) {
+        return;
+      }
+      this.form.controls.date.setValue(globalDateString);
+    }),
+  };
 
   /**
    * Convert a JS Date to a local ISO time, i.e. `yyyy-MM-ddTHH:mm:ss.fff` with NO timezone suffix.

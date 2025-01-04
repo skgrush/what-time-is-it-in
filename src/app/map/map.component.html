@@ -1,0 +1,23 @@
+<!--<map #mapping>-->
+<!--  <area-->
+<!--    />-->
+<!--</map>-->
+
+<img src="/assets/svg-images/World_location_map.svg"
+     (click)="onClick($event)"
+     (mousemove)="onMouseMove($event)"
+     (mouseleave)="mouseCoords.set(undefined)"
+/>
+<span class="map-overlay-br">
+  @if (mouseCoordsText(); as coords) {
+    <span [style.color]="'black'" [style.white-space]="'pre'">
+      {{ coords }}
+    </span>
+  }
+</span>
+<div class="under-info">
+  <a href="https://commons.wikimedia.org/wiki/File:World_location_map.svg">
+    World_location_map
+  </a>
+  Equirectangular projection (compatible with lat/lon)
+</div>

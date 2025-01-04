@@ -14,3 +14,7 @@
 
   </div>
 </footer>
+
+@defer (when mapOpenerService.isOpen()) {
+  <dialog wtiii-map-dialog class="hidey-cell"></dialog>
+}
