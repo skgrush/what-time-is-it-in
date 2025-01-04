@@ -1,0 +1,11 @@
+{
+  "index.html": {
+    "CacheControl": "public, must-revalidate, proxy-revalidate, max-age=0"
+  },
+  "ngsw.json": {
+    "CacheControl": "public, must-revalidate, proxy-revalidate, max-age=0"
+  },
+  "manifest.webmanifest": {
+    "CacheControl": "public, proxy-revalidate, max-age=28800"
+  }
+}
