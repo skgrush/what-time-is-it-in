@@ -24,6 +24,9 @@
             "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "loader": {
+              ".tab": "text"
+            },
             "assets": [
               {
                 "glob": "**/*",

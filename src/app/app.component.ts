@@ -4,6 +4,7 @@ import { ZoneService } from './zone-service/zone.service';
 import { ZonePickerOptionsComponent } from './zone-picker/zone-picker-options/zone-picker-options.component';
 import { AddZoneColumnComponent } from './zone-column/add-zone-column/add-zone-column.component';
 import { HeaderComponent } from './header/header.component';
+import { MapService } from './map/map.service';
 
 @Component({
   selector: 'wtiii-root',
@@ -14,6 +15,8 @@ import { HeaderComponent } from './header/header.component';
 })
 export class AppComponent {
   readonly #zoneService = inject(ZoneService);
+
+  readonly #mapService = inject(MapService);
 
   readonly selectedZones = this.#zoneService.selectedZonesInfo;
 }
