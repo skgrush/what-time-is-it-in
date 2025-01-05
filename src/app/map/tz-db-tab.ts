@@ -1,4 +1,5 @@
 import { euclidianDistance, ICoordinate } from './ICoordinate';
+import { ITimeZoneName } from '../types/region-zone-mapping';
 
 export class TzDbTabFile {
 
@@ -153,7 +154,7 @@ export class TzDbTabEntry {
   constructor(
     readonly codes: ReadonlySet<string>,
     readonly coordinates: ICoordinate,
-    readonly timeZone: string,
+    readonly timeZone: ITimeZoneName,
     readonly comments?: string,
   ) {
   }
@@ -164,7 +165,7 @@ export class TzDbTabEntry {
     return new TzDbTabEntry(
       new Set(codesString.split(',')),
       this.#coordinatesFromString(coordinatesString),
-      timeZone,
+      timeZone as ITimeZoneName,
       comments,
     );
   }

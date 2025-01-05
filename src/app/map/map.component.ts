@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { MapService } from './map.service';
 import { ICoordinate } from './ICoordinate';
+import { ZoneService } from '../zone-service/zone.service';
 
 
 @Component({
@@ -11,6 +12,7 @@ import { ICoordinate } from './ICoordinate';
 })
 export class MapComponent {
   readonly #mapService = inject(MapService);
+  readonly #zoneService = inject(ZoneService);
 
   protected mouseCoords = signal<ICoordinate | undefined>(undefined);
   protected mouseCoordsText = computed(() => {
@@ -36,6 +38,8 @@ export class MapComponent {
 
     this.#mapService.getNearestTimeZone$(coords).subscribe(closest => {
       console.info('closest', closest);
+      const newColumnId = this.#zoneService.addZone();
+      this.#zoneService.changeZoneInfo(newColumnId, closest.closest.timeZone);
     });
   }
 
