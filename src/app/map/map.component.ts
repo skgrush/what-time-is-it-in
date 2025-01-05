@@ -1,9 +1,7 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { MapService } from './map.service';
+import { ICoordinate } from './ICoordinate';
 
-type ICoords = {
-  readonly latitude: number;
-  readonly longitude: number;
-}
 
 @Component({
   selector: 'wtiii-map',
@@ -12,8 +10,9 @@ type ICoords = {
   styleUrl: './map.component.scss'
 })
 export class MapComponent {
+  readonly #mapService = inject(MapService);
 
-  protected mouseCoords = signal<ICoords | undefined>(undefined);
+  protected mouseCoords = signal<ICoordinate | undefined>(undefined);
   protected mouseCoordsText = computed(() => {
     const coords = this.mouseCoords();
 
@@ -30,40 +29,18 @@ export class MapComponent {
   protected onClick(e: MouseEvent) {
     console.log('clicked map', e);
 
-    const coords = this.#mouseEventToLatLon(e);
+    const coords = this.#mapService.mouseEventToLatLon(e);
     if (!coords) {
       return;
     }
 
-
+    this.#mapService.getNearestTimeZone$(coords).subscribe(closest => {
+      console.info('closest', closest);
+    });
   }
 
   protected onMouseMove(e: MouseEvent) {
-    const coords = this.#mouseEventToLatLon(e);
+    const coords = this.#mapService.mouseEventToLatLon(e);
     this.mouseCoords.set(coords);
-  }
-
-  #mouseEventToLatLon(event: MouseEvent): undefined | ICoords {
-    const { target, offsetX, offsetY } = event;
-    if (!(target instanceof HTMLElement)) {
-      return;
-    }
-
-    const { offsetWidth, offsetHeight } = target;
-
-    // latitude: South->North => -90ºS -> +90ºN ; 0º at equator
-    const latitude = (
-      offsetHeight / 2 - offsetY
-    ) * (180 / offsetHeight);
-
-    // longitude: West->East => -180ºW -> +180ºE ; 0º at Greenwich
-    const longitude = (
-      offsetX - offsetWidth / 2
-    ) * (360 / offsetWidth);
-
-    return {
-      latitude,
-      longitude,
-    };
   }
 }

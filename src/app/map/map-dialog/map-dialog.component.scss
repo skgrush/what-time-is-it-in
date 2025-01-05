@@ -1,6 +1,8 @@
 :host {
 
-  display: grid;
+  &[open] {
+    display: grid;
+  }
   overflow: hidden;
 
 }
