@@ -1,13 +1,14 @@
 <form (submit)="$event.preventDefault()">
   <fieldset>
     <legend>Selection type:</legend>
-    <label>
-      <input type="radio" value="NearestPrincipal" [formControl]="mapTypeControl" />
-      Nearest principal
-    </label>
+
     <label>
       <input type="radio" value="LocalTime" [formControl]="mapTypeControl" />
-      Local time (extremely expensive)
+      Local time (expensive)
+    </label>
+    <label>
+      <input type="radio" value="NearestPrincipal" [formControl]="mapTypeControl" />
+      Nearest principal (cheaper but inaccurate)
     </label>
   </fieldset>
 </form>

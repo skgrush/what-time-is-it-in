@@ -27,7 +27,7 @@ export class MapComponent {
 
   // protected readonly mapTypeFieldset = viewChild<HTMLFieldSetElement>('mapTypeFieldset');
 
-  protected readonly mapTypeControl = new FormControl<MapType>('NearestPrincipal', { nonNullable: true});
+  protected readonly mapTypeControl = new FormControl<MapType>('LocalTime', { nonNullable: true});
 
   protected readonly mouseCoords = signal<ICoordinate | undefined>(undefined);
   protected readonly mouseCoordsText = computed(() => {
