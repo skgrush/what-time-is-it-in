@@ -2,6 +2,7 @@
 
   &[open] {
     display: grid;
+    grid-template-rows: min-content;
   }
   overflow: hidden;
 
@@ -14,8 +15,6 @@
   &[open]::backdrop {
     background-color: rgb(0 0 0 / 75%);
   }
-
-
 }
 
 /* This starting-style rule cannot be nested inside the above selector

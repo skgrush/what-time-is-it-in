@@ -15,7 +15,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ColumnIdType } from '../types/zone-info';
 import { INTL_LOCALE } from '../tokens/intl-locale';
 import { JsonPipe } from '@angular/common';
-import { map, skip } from 'rxjs';
+import { map } from 'rxjs';
 import { VerticalClockComponent } from '../vertical-clock/vertical-clock.component';
 import { IconButtonComponent } from '../buttons/icon-button/icon-button.component';
 
@@ -57,7 +57,6 @@ export class ZoneColumnComponent {
     validators: [this.timeZoneValidator],
   });
   readonly #zoneFormControlValueChangedValid = toSignal(this.zoneFormControl.valueChanges.pipe(
-    skip(1),
     map(value => {
       if (this.zoneFormControl.valid && !!value) {
         return value;
