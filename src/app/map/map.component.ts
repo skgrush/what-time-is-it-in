@@ -50,7 +50,7 @@ export class MapComponent {
       )
     );
 
-  protected readonly mousedOverLocalTimeZoneResult = signal<TimeZoneBoundaryFeature | undefined>(undefined);
+  protected readonly mousedOverLocalTimeZoneResult = signal<TimeZoneBoundaryFeature | null>(null);
 
   protected readonly timeZoneBuilderFeatures$ = this.#mapService.timeZoneBuilderFeatures$;
 

@@ -1,25 +1,34 @@
+
+
+<!--<svg #svg></svg>-->
+
 <svg
+  #svg
   xmlns="http://www.w3.org/2000/svg"
   viewBox="-180 90 360 180"
   width="100%"
   height="100%"
   preserveAspectRatio="xMidYMid"
->
-  <g id="world" transform="scale(1, -1)" transform-origin="center" viewBox="0 -90 360 180">
-    <g id="water" fill="blue" (mouseenter)="mouseEntered($event, undefined)">
-      <rect x="-180" y="-90" width="360" height="180" />
-    </g>
-    <g id="landmasses" fill="green" fill-opacity=".1" stroke="gray" stroke-width="0.2">
+  (click)="onClickSvg($event)"
+  (mousemove)="onMouseMoveSvg($event)"
+></svg>
+<!--&gt;-->
+<!--  <g id="world" transform="scale(1, -1)" transform-origin="center" viewBox="0 -90 360 180">-->
+<!--    <g id="water" fill="blue">  &lt;!&ndash;(mouseenter)="mouseEntered($event, undefined)">&ndash;&gt;-->
+<!--      <rect x="-180" y="-90" width="360" height="180" />-->
+<!--    </g>-->
+<!--    <g id="landmasses" fill="green" fill-opacity=".1" stroke="gray" stroke-width="0.2">-->
 
-      @for (feature of features(); track feature.tzid) {
-        <g [id]="'feature-'+feature.tzid">
-          <path
-                [attr.d]="feature.geometry.getSvgPath()"
-                (click)="onClick($event, feature)"
-                (mouseenter)="mouseEntered($event, feature)"
-          />
-        </g>
-      }
-    </g>
-  </g>
-</svg>
+<!--      @for (feature of features(); track feature.tzid) {-->
+<!--        <g [id]="'feature-'+feature.tzid">-->
+<!--          <path-->
+<!--                [attr.d]="feature.geometry.getSvgPath()"-->
+<!--                />-->
+<!--&lt;!&ndash;                (click)="onClick($event, feature)"&ndash;&gt;-->
+<!--&lt;!&ndash;                (mouseenter)="mouseEntered($event, feature)"&ndash;&gt;-->
+<!--          />-->
+<!--        </g>-->
+<!--      }-->
+<!--    </g>-->
+<!--  </g>-->
+<!--</svg>-->
