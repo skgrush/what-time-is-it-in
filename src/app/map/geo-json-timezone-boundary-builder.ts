@@ -6,8 +6,6 @@ type TData = {
   readonly tzid: ITimeZoneName;
 }
 
-type RecursiveNumberArray = readonly number[] | readonly RecursiveNumberArray[];
-
 Error.stackTraceLimit = Infinity;
 
 /**
@@ -58,7 +56,7 @@ export class GeoJsonTimezoneBoundaryBuilder {
 export class TimeZoneBoundaryFeature {
 
   protected constructor(
-    public readonly geometry: GeometryPointSetBase,
+    public readonly geometry: GeometryPointSetSubclasses,
     public readonly tzid: ITimeZoneName,
   ) {}
 
@@ -75,10 +73,14 @@ export class TimeZoneBoundaryFeature {
   }
 }
 
+export type GeometryPointSetSubclasses = GeometryPointPolygon | GeometryPointMultiPolygon;
 export abstract class GeometryPointSetBase {
+  public abstract readonly type: 'Polygon' | 'MultiPolygon';
   public abstract contains(coord: ICoordinate): boolean;
 
-  public static fromGeometry(geometry: IGeoJsonGeometry): GeometryPointSetBase {
+  public abstract getSvgPath(): string;
+
+  public static fromGeometry(geometry: IGeoJsonGeometry) {
     switch (geometry.type) {
       case 'Polygon':
         return new GeometryPointPolygon(geometry.coordinates);
@@ -270,6 +272,16 @@ class SimplePolygon {
     }
   }
 
+  *getSvgPoints(): Iterable<string> {
+    yield 'M';
+    for (const line of this.lines) {
+      yield `${line.start[0]},${line.start[1]}`;
+    }
+
+    const first = this.lines[0];
+    yield `${first.start[0]},${first.start[1]}`;
+  }
+
   containsStartPoint(line: SimpleRightHandRuleLine) {
     let lefts = 0;
     let rights = 0;
@@ -306,6 +318,7 @@ class SimplePolygon {
  * Any subsequent ring is a hole, following reverse right-hand rule.
  */
 class GeometryPointPolygon extends GeometryPointSetBase {
+  override readonly type = 'Polygon';
 
   public readonly exteriorSurface: SimplePolygon;
   public readonly holeSurfaces: readonly SimplePolygon[];
@@ -321,8 +334,17 @@ class GeometryPointPolygon extends GeometryPointSetBase {
 
     this.exteriorSurface = new SimplePolygon(linearRings[0]);
     this.holeSurfaces = linearRings.slice(1).map(r => new SimplePolygon(r, true));
+  }
 
+  override getSvgPath(): string {
+    const this_ = this;
+    return [...(function*() {
+      yield* this_.exteriorSurface.getSvgPoints();
 
+      for (const holeSurface of this_.holeSurfaces) {
+        yield* holeSurface.getSvgPoints();
+      }
+    })()].join(' ');
   }
 
   override contains(coord: ICoordinate): boolean {
@@ -353,11 +375,22 @@ class GeometryPointPolygon extends GeometryPointSetBase {
 }
 
 class GeometryPointMultiPolygon extends GeometryPointSetBase {
+  override readonly type = 'MultiPolygon';
 
   constructor(
     private readonly polygons: readonly GeometryPointPolygon[],
   ) {
     super();
+  }
+
+  override getSvgPath(): string {
+    const this_ = this;
+    return [...(function*() {
+
+      for (const polygon of this_.polygons) {
+        yield polygon.getSvgPath();
+      }
+    })()].join(' ');
   }
 
   override contains(coord: ICoordinate): boolean {
