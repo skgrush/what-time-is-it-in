@@ -12,6 +12,7 @@ import { MapOpenerService } from '../map-opener.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(close)': 'onClose()',
+    '(click)': 'onClick($event)',
   }
 })
 export class MapDialogComponent {
@@ -20,6 +21,21 @@ export class MapDialogComponent {
 
   protected onClose() {
     this.#mapOpenerService.isOpen.set(false);
+  }
+
+  protected onClick(e: MouseEvent) {
+    if (this.#isClickOutsideModal(e)) {
+      this.#mapOpenerService.isOpen.set(false);
+      return;
+    }
+  }
+
+  #isClickOutsideModal(e: MouseEvent) {
+    return (
+      e.target instanceof HTMLDialogElement && (
+        e.layerX < 0 || e.layerY < 0 || e.layerX > e.target.offsetWidth || e.layerY > e.target.offsetHeight
+      )
+    );
   }
 
   readonly #fx = {
@@ -31,6 +47,5 @@ export class MapDialogComponent {
         ? dialog.showModal()
         : dialog.close();
     }),
-
   };
 }
