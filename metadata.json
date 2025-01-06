@@ -7,5 +7,11 @@
   },
   "manifest.webmanifest": {
     "CacheControl": "public, proxy-revalidate, max-age=28800"
+  },
+  "assets/svg-images/World_location_map.svg": {
+    "ContentType": "image/svg+xml"
+  },
+  "assets/data/timezones-now.evansiroky.timezone-boundary-builder.2024b.geojson": {
+    "ContentType": "application/geo+json"
   }
 }

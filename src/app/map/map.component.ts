@@ -1,12 +1,18 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { MapService } from './map.service';
 import { ICoordinate } from './ICoordinate';
 import { ZoneService } from '../zone-service/zone.service';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
+export type MapType = 'NearestPrincipal' | 'LocalTime';
 
 @Component({
   selector: 'wtiii-map',
-  imports: [],
+  imports: [
+    ReactiveFormsModule,
+  ],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
 })
@@ -14,8 +20,12 @@ export class MapComponent {
   readonly #mapService = inject(MapService);
   readonly #zoneService = inject(ZoneService);
 
-  protected mouseCoords = signal<ICoordinate | undefined>(undefined);
-  protected mouseCoordsText = computed(() => {
+  // protected readonly mapTypeFieldset = viewChild<HTMLFieldSetElement>('mapTypeFieldset');
+
+  protected readonly mapTypeControl = new FormControl<MapType>('NearestPrincipal', { nonNullable: true});
+
+  protected readonly mouseCoords = signal<ICoordinate | undefined>(undefined);
+  protected readonly mouseCoordsText = computed(() => {
     const coords = this.mouseCoords();
 
     if (!coords) {
@@ -26,7 +36,14 @@ export class MapComponent {
     }º${ coords.latitude < 0 ? 'S' : 'N' } ${
       coords.longitude.toFixed(3).padStart(8, ' ')
     }º${ coords.longitude < 0 ? 'W' : 'E' }`;
-  })
+  });
+
+  protected readonly mouseTimeZoneResult =
+    toSignal(
+      toObservable(this.mouseCoords).pipe(
+        switchMap(mouseCoords => this.#mapService.getNearestTimeZone$(mouseCoords))
+      )
+    );
 
   protected onClick(e: MouseEvent) {
     console.log('clicked map', e);
@@ -36,11 +53,20 @@ export class MapComponent {
       return;
     }
 
-    this.#mapService.getNearestTimeZone$(coords).subscribe(closest => {
-      console.info('closest', closest);
-      const newColumnId = this.#zoneService.addZone();
-      this.#zoneService.changeZoneInfo(newColumnId, closest.closest.timeZone);
-    });
+    switch (this.mapTypeControl.value) {
+      case 'NearestPrincipal':
+        return void this.#mapService.getNearestTimeZone$(coords).subscribe(closest => {
+          console.info('closest', closest);
+          const newColumnId = this.#zoneService.addZone();
+          this.#zoneService.changeZoneInfo(newColumnId, closest.closest.timeZone);
+        });
+      case 'LocalTime':
+        return void this.#mapService.getContainingTimeZone$(coords).subscribe(containedBy => {
+          console.info('containedBy', containedBy);
+        });
+    }
+
+
   }
 
   protected onMouseMove(e: MouseEvent) {

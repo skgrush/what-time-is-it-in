@@ -1,4 +1,4 @@
-import { euclidianDistance, ICoordinate } from './ICoordinate';
+import { ICoordinate, manhattanDistance } from './ICoordinate';
 import { ITimeZoneName } from '../types/region-zone-mapping';
 
 export class TzDbTabFile {
@@ -15,93 +15,100 @@ export class TzDbTabFile {
   }
 
   binarySearchNearest(coord: ICoordinate) {
-    const entries = this.entries;
-    let l = 0;
-    let r = this.entries.length - 1;
+    try {
+      const entries = this.entries;
+      let l = 0;
+      let r = this.entries.length - 1;
+      let lastM = r;
 
-    while (l <= r) {
-      const m = Math.floor((l + r) / 2);
-      const entry = entries[m];
-      if (entry.coordinates.longitude < coord.longitude) {
-        l = m + 1;
-      } else if (entry.coordinates.longitude > coord.longitude) {
-        r = m - 1;
-      }
-    }
-
-    const closestIdx = r;
-
-    let closestEntry = entries[closestIdx];
-    let closestEntryDistance = euclidianDistance(closestEntry.coordinates, coord);
-
-    const originalClosestEntryDistance = closestEntryDistance;
-
-    let searchLeft = true;
-    let searchRight = true;
-
-    // check each entry radially out from the list until the longitude
-    let offset = 1;
-    while(searchLeft && searchRight) {
-      if (searchLeft) {
-        const left = entries[closestIdx - offset];
-        const result = this.#getDistance(
-          coord,
-          left?.coordinates,
-          [closestEntry, closestEntryDistance],
-          originalClosestEntryDistance,
-        );
-
-        if (!result.keepSearching) {
-          searchLeft = false;
-        } else if (result.isCloser) {
-          closestEntry = left;
-          closestEntryDistance = result.distance;
+      while (l <= r) {
+        const m = lastM = Math.floor((l + r) / 2);
+        const entry = entries[m];
+        if (entry.coordinates.longitude < coord.longitude) {
+          l = m + 1;
+        } else if (entry.coordinates.longitude > coord.longitude) {
+          r = m - 1;
+        } else {
+          break;
         }
       }
 
-      if (searchRight) {
-        const right = entries[closestIdx + offset];
-        const result = this.#getDistance(
-          coord,
-          right?.coordinates,
-          [closestEntry, closestEntryDistance],
-          originalClosestEntryDistance,
-        );
+      const closestIdx = lastM;
 
-        if (!result.keepSearching) {
-          searchLeft = false;
-        } else if (result.isCloser) {
-          closestEntry = right;
-          closestEntryDistance = result.distance;
+      let closestEntry = entries[closestIdx];
+      let closestEntryManhattanDistance = manhattanDistance(closestEntry.coordinates, coord);
+
+      const originalClosestEntryManhattanDistance = closestEntryManhattanDistance;
+
+      let searchLeft = true;
+      let searchRight = true;
+
+      // check each entry radially out from the list until the longitude
+      let offset = 1;
+      while (searchLeft && searchRight) {
+        if (searchLeft) {
+          const left = entries[closestIdx - offset];
+          const result = this.#getManhattanDistance(
+            coord,
+            left?.coordinates,
+            [closestEntry, closestEntryManhattanDistance],
+            originalClosestEntryManhattanDistance,
+          );
+
+          if (!result.keepSearching) {
+            searchLeft = false;
+          } else if (result.isCloser) {
+            closestEntry = left;
+            closestEntryManhattanDistance = result.manhattanDistance;
+          }
         }
+
+        if (searchRight) {
+          const right = entries[closestIdx + offset];
+          const result = this.#getManhattanDistance(
+            coord,
+            right?.coordinates,
+            [closestEntry, closestEntryManhattanDistance],
+            originalClosestEntryManhattanDistance,
+          );
+
+          if (!result.keepSearching) {
+            searchLeft = false;
+          } else if (result.isCloser) {
+            closestEntry = right;
+            closestEntryManhattanDistance = result.manhattanDistance;
+          }
+        }
+
+        ++offset;
       }
 
-      ++offset;
+      return {
+        closest: closestEntry,
+      };
+    } catch (e) {
+      debugger;
+      throw e;
     }
-
-    return {
-      closest: closestEntry,
-      closestDistance: closestEntryDistance,
-    };
   }
 
-  #getDistance(
+  #getManhattanDistance(
     coordinateWeWereSearchingFor: ICoordinate,
     coordinateWeAreChecking: undefined | ICoordinate,
-    currentClosest: [entry: TzDbTabEntry, distance: number],
-    distanceOfClosestLongitude: number,
-  ): { keepSearching: boolean } & ({ isCloser: false } | { isCloser: true, distance: number }) {
+    currentClosest: [entry: TzDbTabEntry, manhattanDistance: number],
+    manhattanDistanceOfClosestLongitude: number,
+  ): { keepSearching: boolean } & ({ isCloser: false } | { isCloser: true, manhattanDistance: number }) {
 
     if (!coordinateWeAreChecking) {
       return { keepSearching: false, isCloser: false };
     }
 
-    const distanceOfCheckedCoordinate = euclidianDistance(coordinateWeWereSearchingFor, coordinateWeAreChecking);
+    const manhattanDistanceOfCheckedCoordinate = manhattanDistance(coordinateWeWereSearchingFor, coordinateWeAreChecking);
 
-    if (distanceOfCheckedCoordinate < currentClosest[1]) {
-      return { keepSearching: true, isCloser: true, distance: distanceOfCheckedCoordinate };
+    if (manhattanDistanceOfCheckedCoordinate < currentClosest[1]) {
+      return { keepSearching: true, isCloser: true, manhattanDistance: manhattanDistanceOfCheckedCoordinate };
     }
-    if (Math.abs(coordinateWeWereSearchingFor.longitude - coordinateWeAreChecking.longitude) > distanceOfClosestLongitude) {
+    if (Math.abs(coordinateWeWereSearchingFor.longitude - coordinateWeAreChecking.longitude) > manhattanDistanceOfClosestLongitude) {
       return { keepSearching: false, isCloser: false };
     }
 

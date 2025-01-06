@@ -3,18 +3,37 @@
 <!--    />-->
 <!--</map>-->
 
+<form (submit)="$event.preventDefault()">
+  <fieldset>
+    <legend>Selection type:</legend>
+    <label>
+      Nearest principal
+      <input type="radio" value="NearestPrincipal" [formControl]="mapTypeControl" />
+    </label>
+    <label>
+      Local time (expensive)
+      <input type="radio" value="LocalTime" [formControl]="mapTypeControl" />
+    </label>
+  </fieldset>
+</form>
+
 <img src="/assets/svg-images/World_location_map.svg"
      (click)="onClick($event)"
      (mousemove)="onMouseMove($event)"
      (mouseleave)="mouseCoords.set(undefined)"
 />
-<span class="map-overlay-br">
-  @if (mouseCoordsText(); as coords) {
-    <span [style.color]="'black'" [style.white-space]="'pre'">
+<div class="map-overlay-br">
+  <div class="map-mouse-coords">
+    @if (mouseCoordsText(); as coords) {
       {{ coords }}
-    </span>
-  }
-</span>
+    }
+  </div>
+  <div class="map-mouse-tz">
+    @if (mouseTimeZoneResult(); as mouseTzResult) {
+      {{ mouseTzResult.closest.timeZone }}
+    }
+  </div>
+</div>
 <div class="under-info">
   <a href="https://commons.wikimedia.org/wiki/File:World_location_map.svg">
     World_location_map

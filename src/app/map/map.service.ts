@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { defer, map, shareReplay } from 'rxjs';
+import { defer, map, Observable, of, shareReplay } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TzDbTabFile } from './tz-db-tab';
 import { ICoordinate } from './ICoordinate';
+import { fromFetch } from 'rxjs/internal/observable/dom/fetch';
+import { GeoJsonTimezoneBoundaryBuilder, TimeZoneBoundaryFeature } from './geo-json-timezone-boundary-builder';
 
 
 @Injectable({
@@ -10,16 +12,41 @@ import { ICoordinate } from './ICoordinate';
 })
 export class MapService {
 
-  readonly zone1970data$ = defer(() =>
-    import('../data/zone1970.tab')
+  readonly #zoneNowData$ = defer(() =>
+    import('../data/zonenow.tzdata2024b.tab')
   ).pipe(
     map(module => TzDbTabFile.parseTabFile(module.default)),
     shareReplay(1),
     takeUntilDestroyed(),
   );
 
-  getNearestTimeZone$(coords: ICoordinate) {
-    return this.zone1970data$.pipe(
+  /**
+   *
+   * @private
+   * @link https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2024b
+   */
+  readonly #timeZonesNowBoundaryBuilder$ = defer(() =>
+    fromFetch('/assets/data/timezones-now.evansiroky.timezone-boundary-builder.2024b.geojson', { selector: response => response.json() }),
+  ).pipe(
+    map(jsonObject => GeoJsonTimezoneBoundaryBuilder.parseFileToFeatures(jsonObject)),
+    map(features => new GeoJsonTimezoneBoundaryBuilder([...features])),
+    shareReplay(1),
+    takeUntilDestroyed(),
+  );
+
+  getContainingTimeZone$(coord: ICoordinate): Observable<TimeZoneBoundaryFeature | null> {
+    return this.#timeZonesNowBoundaryBuilder$.pipe(
+      map(builder => builder.getContainingFeature(coord)),
+    )
+  }
+
+  getNearestTimeZone$(coords: ICoordinate): Observable<ReturnType<TzDbTabFile['binarySearchNearest']>>;
+  getNearestTimeZone$(coords?: ICoordinate): Observable<undefined | ReturnType<TzDbTabFile['binarySearchNearest']>>;
+  getNearestTimeZone$(coords?: ICoordinate) {
+    if (!coords) {
+      return of(undefined);
+    }
+    return this.#zoneNowData$.pipe(
       map(tabFile => {
         return tabFile.binarySearchNearest(coords);
       }),
