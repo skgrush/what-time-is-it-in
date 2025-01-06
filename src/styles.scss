@@ -6,6 +6,8 @@
 
 :root {
   --font-family: "Courier New", monospace;
+  --font-size-ui: 16px;
+  --font-size-text: 12px;
   --accent-color: green;
   //--background-color-1: #222;
   //--background-color-2: #333;
@@ -24,7 +26,7 @@
 
 html, body {
   font-family: var(--font-family);
-  font-size: 12px;
+  font-size: var(--font-size-text);
 
   color-scheme: dark;
   //background-color: var(--background-color-1);
@@ -38,7 +40,7 @@ html, body {
   overflow: hidden;
 
   input {
-    font-size: 16px;
+    font-size: var(--font-size-ui);
   }
 }
 

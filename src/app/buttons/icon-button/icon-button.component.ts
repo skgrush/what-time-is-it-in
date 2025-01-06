@@ -10,6 +10,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     '[attr.title]': 'label()',
     '[attr.aria-label]': 'label()',
     'type': 'button',
+    '[class.material-symbols-outlined]': 'true',
   }
 })
 export class IconButtonComponent {
