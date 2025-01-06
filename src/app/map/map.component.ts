@@ -1,10 +1,13 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MapService } from './map.service';
 import { ICoordinate } from './ICoordinate';
 import { ZoneService } from '../zone-service/zone.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { TimezoneMappingComponent } from './timezone-mapping/timezone-mapping.component';
+import { AsyncPipe } from '@angular/common';
+import { TimeZoneBoundaryFeature } from './geo-json-timezone-boundary-builder';
 
 export type MapType = 'NearestPrincipal' | 'LocalTime';
 
@@ -12,6 +15,8 @@ export type MapType = 'NearestPrincipal' | 'LocalTime';
   selector: 'wtiii-map',
   imports: [
     ReactiveFormsModule,
+    TimezoneMappingComponent,
+    AsyncPipe,
   ],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
@@ -38,12 +43,25 @@ export class MapComponent {
     }º${ coords.longitude < 0 ? 'W' : 'E' }`;
   });
 
-  protected readonly mouseTimeZoneResult =
+  protected readonly mouseNearestTimeZoneResult =
     toSignal(
       toObservable(this.mouseCoords).pipe(
         switchMap(mouseCoords => this.#mapService.getNearestTimeZone$(mouseCoords))
       )
     );
+
+  protected readonly mousedOverLocalTimeZoneResult = signal<TimeZoneBoundaryFeature | undefined>(undefined);
+
+  protected readonly timeZoneBuilderFeatures$ = this.#mapService.timeZoneBuilderFeatures$;
+
+  protected mofDebug(...args: any[]) {
+    console.info('mof', ...args);
+  }
+
+  protected clickedFeature(feature: TimeZoneBoundaryFeature) {
+    const newColumnId = this.#zoneService.addZone();
+    this.#zoneService.changeZoneInfo(newColumnId, feature.tzid);
+  }
 
   protected onClick(e: MouseEvent) {
     console.log('clicked map', e);

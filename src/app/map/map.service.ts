@@ -34,6 +34,10 @@ export class MapService {
     takeUntilDestroyed(),
   );
 
+  readonly timeZoneBuilderFeatures$ = this.#timeZonesNowBoundaryBuilder$.pipe(
+    map(builder => builder.features),
+  );
+
   getContainingTimeZone$(coord: ICoordinate): Observable<TimeZoneBoundaryFeature | null> {
     return this.#timeZonesNowBoundaryBuilder$.pipe(
       map(builder => builder.getContainingFeature(coord)),
@@ -55,11 +59,19 @@ export class MapService {
 
   mouseEventToLatLon(event: MouseEvent): undefined | ICoordinate {
     const { target, offsetX, offsetY } = event;
-    if (!(target instanceof HTMLElement)) {
-      return;
-    }
+    let offsetWidth: number,
+        offsetHeight: number;
 
-    const { offsetWidth, offsetHeight } = target;
+    if (target instanceof HTMLElement) {
+      ({offsetHeight, offsetWidth} = target);
+    } else if (target instanceof SVGSVGElement) {
+      ({clientHeight: offsetHeight, clientWidth: offsetWidth} = target);
+    } else if (target instanceof SVGElement) {
+      ({clientHeight: offsetHeight, clientWidth: offsetWidth} = target.viewportElement!);
+    } else {
+      debugger;
+      return undefined;
+    }
 
     // latitude: South->North => -90ºS -> +90ºN ; 0º at equator
     const latitude = (

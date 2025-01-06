@@ -16,6 +16,9 @@
     width: 100%;
     grid-area: map;
   }
+  & > wtiii-timezone-mapping {
+    grid-area: map;
+  }
 
   & > .under-info {
     grid-area: under;
