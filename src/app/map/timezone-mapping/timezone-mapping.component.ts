@@ -1,8 +1,7 @@
-import { AfterViewChecked, ChangeDetectionStrategy, Component, input, NO_ERRORS_SCHEMA, output } from '@angular/core';
-import { GeoJsonTimezoneBoundaryBuilder, TimeZoneBoundaryFeature } from '../geo-json-timezone-boundary-builder';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { TimeZoneBoundaryFeature } from '../geo-json-timezone-boundary-builder';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { scan } from 'rxjs';
-import { ITimeZoneName } from '../../types/region-zone-mapping';
 
 @Component({
   selector: 'wtiii-timezone-mapping',
@@ -16,8 +15,7 @@ import { ITimeZoneName } from '../../types/region-zone-mapping';
     // 'xmlns': 'http://www.w3.org/2000/svg',
     // 'transform': 'scale(1, -1)',
     // 'transform-origin': 'center',
-  },
-  schemas: [NO_ERRORS_SCHEMA],
+  }
 })
 export class TimezoneMappingComponent implements AfterViewChecked {
   public readonly name = 'timezone-mapping';

@@ -54,10 +54,6 @@ export class MapComponent {
 
   protected readonly timeZoneBuilderFeatures$ = this.#mapService.timeZoneBuilderFeatures$;
 
-  protected mofDebug(...args: any[]) {
-    console.info('mof', ...args);
-  }
-
   protected clickedFeature(feature: TimeZoneBoundaryFeature) {
     const newColumnId = this.#zoneService.addZone();
     this.#zoneService.changeZoneInfo(newColumnId, feature.tzid);

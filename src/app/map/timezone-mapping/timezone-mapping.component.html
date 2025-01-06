@@ -14,7 +14,7 @@
       @for (feature of features(); track feature.tzid) {
         <g [id]="'feature-'+feature.tzid">
           <path
-                attr.d="{{ feature.geometry.getSvgPath() }}"
+                [attr.d]="feature.geometry.getSvgPath()"
                 (click)="onClick($event, feature)"
                 (mouseenter)="mouseEntered($event, feature)"
           />
