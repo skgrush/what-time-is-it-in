@@ -27,7 +27,8 @@
      (mouseleave)="mouseCoords.set(undefined); mousedOverLocalTimeZoneResult.set(null)"
   />
 }
-<div class="map-overlay-br">
+
+<div class="text-under-map">
   <div class="map-mouse-coords">
     @if (mouseCoordsText(); as coords) {
       {{ coords }}
@@ -44,7 +45,7 @@
     }
   </div>
 </div>
-<div class="under-info">
+<div class="citation">
   <a href="https://commons.wikimedia.org/wiki/File:World_location_map.svg">
     World_location_map
   </a>

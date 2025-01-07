@@ -6,7 +6,9 @@
   grid-template-areas:
     "above"
     "map"
-    "under";
+    "under"
+    "citations"
+    ;
 
   & > form {
     grid-area: above;
@@ -20,26 +22,28 @@
     grid-area: map;
   }
 
-  & > .under-info {
-    grid-area: under;
+  & > .citations {
+    grid-area: citation;
   }
 
-  & > .map-overlay-br {
-    grid-area: map;
-
-    justify-self: right;
-    align-self: end;
+  & > .text-under-map {
+    grid-area: under;
 
     display: grid;
-    grid-template-columns: 1fr;
-    grid-auto-rows: min-content min-content;
-    justify-items: right;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: min-content;
 
     & > div {
       width: min-content;
-      color: black;
       white-space: pre;
       user-select: none;
+    }
+
+    & > .map-mouse-coords {
+      justify-self: start;
+    }
+    & > .map-mouse-tz {
+      justify-self: end;
     }
   }
 }
