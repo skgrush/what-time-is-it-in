@@ -69,7 +69,6 @@ export class MapService {
     } else if (target instanceof SVGElement) {
       ({clientHeight: offsetHeight, clientWidth: offsetWidth} = target.viewportElement!);
     } else {
-      debugger;
       return undefined;
     }
 

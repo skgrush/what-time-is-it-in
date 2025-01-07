@@ -1,0 +1,8 @@
+@if (stateAndModalRefAndInjector(); as m) {
+<ng-container *ngComponentOutlet="
+  m.modalState.componentType;
+  inputs: m.modalState.inputs;
+  injector: m.childInjector;
+"
+/>
+}

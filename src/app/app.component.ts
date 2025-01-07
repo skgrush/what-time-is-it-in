@@ -4,8 +4,8 @@ import { ZoneService } from './zone-service/zone.service';
 import { ZonePickerOptionsComponent } from './zone-picker/zone-picker-options/zone-picker-options.component';
 import { AddZoneColumnComponent } from './zone-column/add-zone-column/add-zone-column.component';
 import { HeaderComponent } from './header/header.component';
-import { MapOpenerService } from './map/map-opener.service';
-import { MapDialogComponent } from './map/map-dialog/map-dialog.component';
+import { ModalService } from './modal/modal.service';
+import { ModalComponent } from './modal/modal.component';
 
 @Component({
   selector: 'wtiii-root',
@@ -14,7 +14,8 @@ import { MapDialogComponent } from './map/map-dialog/map-dialog.component';
     ZonePickerOptionsComponent,
     AddZoneColumnComponent,
     HeaderComponent,
-    MapDialogComponent,
+    // dynamically deferred
+    ModalComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -23,7 +24,7 @@ import { MapDialogComponent } from './map/map-dialog/map-dialog.component';
 export class AppComponent {
   readonly #zoneService = inject(ZoneService);
 
-  readonly mapOpenerService = inject(MapOpenerService);
+  protected readonly modalService = inject(ModalService);
 
   readonly selectedZones = this.#zoneService.selectedZonesInfo;
 }

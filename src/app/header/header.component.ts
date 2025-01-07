@@ -27,8 +27,8 @@ export class HeaderComponent {
   });
   readonly #dateControlChanged = toSignal(this.form.controls.date.valueChanges.pipe(startWith(this.form.controls.date.value)));
 
-  toggleMap() {
-    this.#mapOpenerService.isOpen.update(v => !v);
+  openMap() {
+    this.#mapOpenerService.openMap$().subscribe();
   }
 
   resetDate() {
