@@ -18,6 +18,7 @@ import { JsonPipe } from '@angular/common';
 import { map } from 'rxjs';
 import { VerticalClockComponent } from '../vertical-clock/vertical-clock.component';
 import { IconButtonComponent } from '../buttons/icon-button/icon-button.component';
+import { ZoneNormalizerService } from '../zone-normalizer-service/zone-normalizer.service';
 
 @Component({
   selector: 'wtiii-zone-column',
@@ -37,10 +38,11 @@ import { IconButtonComponent } from '../buttons/icon-button/icon-button.componen
 export class ZoneColumnComponent {
 
   readonly #zoneService = inject(ZoneService);
+  readonly #zoneValidator = inject(ZoneNormalizerService);
   readonly #intlLocale = inject(INTL_LOCALE);
 
   public timeZoneValidator: ValidatorFn = (control: AbstractControl<ITimeZoneName | null>) => {
-    if (control.value && !this.#zoneService.allZones.has(control.value)) {
+    if (control.value && this.#zoneValidator.normalize(control.value) === null) {
       return {
         'invalidTimeZone': true,
       };

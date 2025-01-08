@@ -3,11 +3,13 @@ import { LOCATION } from '../tokens/location';
 import { ITimeZoneName } from '../types/region-zone-mapping';
 import { HISTORY } from '../tokens/history';
 import { CLIPBOARD } from '../tokens/clipboard';
+import { ZoneNormalizerService } from '../zone-normalizer-service/zone-normalizer.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImportExportService {
+  readonly #zoneValidator = inject(ZoneNormalizerService);
   readonly #location = inject(LOCATION);
   readonly #history = inject(HISTORY);
   readonly #clipboard = inject(CLIPBOARD);
@@ -19,7 +21,7 @@ export class ImportExportService {
    *
    * If global location is unreachable (e.g. server-side), returns `[]`.
    */
-  getValidZonesFromQueryParams(allValidZones: ReadonlySet<ITimeZoneName>) {
+  getValidZonesFromQueryParams() {
     if (!this.#location?.search.includes(`${ImportExportService.queryParamZone}=`)) {
       return [];
     }
@@ -27,7 +29,7 @@ export class ImportExportService {
     const queryParams = new URLSearchParams(this.#location.search);
 
     const unvalidatedZones = queryParams.getAll(ImportExportService.queryParamZone) as ITimeZoneName[];
-    const validatedZones = unvalidatedZones.filter((z) => allValidZones.has(z));
+    const validatedZones = unvalidatedZones.filter((z) => !!this.#zoneValidator.normalize(z));
 
     if (unvalidatedZones.length !== validatedZones.length) {
       console.error('Query param included invalid zone(s)', unvalidatedZones.filter(v => !validatedZones.includes(v)));

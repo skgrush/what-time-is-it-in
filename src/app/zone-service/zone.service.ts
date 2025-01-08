@@ -3,21 +3,21 @@ import { ITimeZoneName, RegionZoneMapping } from '../types/region-zone-mapping';
 import { ColumnIdType, IZoneInfo } from '../types/zone-info';
 import { ImportExportService } from '../import-export-service/import-export.service';
 import { isPlatformServer } from '@angular/common';
+import { ZoneNormalizerService } from '../zone-normalizer-service/zone-normalizer.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ZoneService {
+  readonly #zoneNormalizer = inject(ZoneNormalizerService);
   readonly #importExportService = inject(ImportExportService);
   readonly #isServerSide = isPlatformServer(inject(PLATFORM_ID));
 
   #currentIdNumber = 0;
 
-  readonly myIanaTimezone = (
-    this.#isServerSide
-      ? 'Etc/UTC'
-      : Intl.DateTimeFormat().resolvedOptions().timeZone
-  ) as ITimeZoneName;
+  readonly myCldrTimezone = this.#zoneNormalizer.normalize(
+    (this.#isServerSide ? 'UTC' : Intl.DateTimeFormat().resolvedOptions().timeZone) as ITimeZoneName
+  )!;
 
   readonly renderDate = signal(new Date(), {
     equal: (a, b) => +a === +b,
@@ -25,15 +25,14 @@ export class ZoneService {
 
   public readonly zonePickerOptionsId = 'zone-picker-options';
 
-  public readonly allZones = (
+  readonly #allBrowserZones = (
     this.#isServerSide
-    ? new Set(['Etc/UTC'])
-    : new Set(Intl.supportedValuesOf('timeZone')).add('Etc/UTC')
+    ? new Set(['UTC'])
+    : new Set(Intl.supportedValuesOf('timeZone')).add('UTC')
   )as ReadonlySet<ITimeZoneName>;
 
-  // TODO: does this work to create a lazy signal? Maybe we will need an observable with a delay to improve initial-load
   public readonly allZonesByRegion = computed(() => {
-    const timeZones = this.allZones;
+    const timeZones = this.#allBrowserZones;
 
     const grouped = Object.groupBy(timeZones, ZoneService.getRegionFromTimeZone)
     for (let k in grouped) {
@@ -46,11 +45,11 @@ export class ZoneService {
   public selectedZonesInfo = this.#selectedZonesInfo.asReadonly();
 
   #selectedZonesInitializer(): ReadonlyMap<ColumnIdType, IZoneInfo | undefined> {
-    const validatedZones = this.#importExportService.getValidZonesFromQueryParams(this.allZones);
+    const validatedZones = this.#importExportService.getValidZonesFromQueryParams();
 
     if (validatedZones.length === 0) {
       // fallback behavior, fill in the current timezone if none others exist
-      validatedZones.push(this.myIanaTimezone);
+      validatedZones.push(this.myCldrTimezone);
     }
 
     return new Map(
@@ -93,7 +92,15 @@ export class ZoneService {
     return newId;
   }
 
-  public changeZoneInfo(id: ColumnIdType, timeZoneName: ITimeZoneName | null) {
+  public changeZoneInfo(id: ColumnIdType, originalTimeZoneName: ITimeZoneName | null) {
+    let timeZoneName: ITimeZoneName | null = null;
+    if (originalTimeZoneName) {
+      timeZoneName = this.#zoneNormalizer.normalize(originalTimeZoneName);
+      if (timeZoneName === null) {
+        throw new Error('invalid timeZone name');
+      }
+    }
+
     const timeZoneRegion = timeZoneName ? ZoneService.getRegionFromTimeZone(timeZoneName) : undefined;
     const entry = !timeZoneRegion || !timeZoneName
       ? undefined
@@ -134,9 +141,12 @@ export class ZoneService {
     });
   }
 
-  public static getRegionFromTimeZone<TR extends string>(
-    zone: `${TR}/${string}` | string & {}
-  ): TR {
-    return zone.split('/', 1)[0] as TR;
+  public static getRegionFromTimeZone(
+    zone: ITimeZoneName | string & {}
+  ): string {
+    if (zone === 'UTC') {
+      return 'Etc';
+    }
+    return zone.split('/', 1)[0];
   }
 }
