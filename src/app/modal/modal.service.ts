@@ -1,5 +1,5 @@
 import { computed, ElementRef, Injectable, Injector, signal } from '@angular/core';
-import { defer, filter, fromEvent, map, Observable, take, throwError } from 'rxjs';
+import { defer, filter, fromEvent, map, Observable, of, switchMap, take, throwError } from 'rxjs';
 import { ModalComponent } from './modal.component';
 import { toObservable } from '@angular/core/rxjs-interop';
 
@@ -81,34 +81,37 @@ export class ModalService {
   });
 
   open$<T, TInputs extends Readonly<Record<string, unknown>>>(
-    componentType: ComponentType<T>,
+    componentType$: Observable<ComponentType<T>>,
     openerInjector: Injector,
     inputs: TInputs,
   ): Observable<ModalRef<T>> {
-    return defer(() => {
-      if (this.#modalRef() !== null) {
-        return throwError(() => Error('modal still open'));
-      }
 
-      const injector = Injector.create({
-        name: 'Modal-Service-Injector-Wrapping-opener-injector',
-        parent: openerInjector,
-        providers: [
-        ]
-      });
+    return componentType$.pipe(
+      switchMap(componentType => {
+        if (this.#modalRef() !== null) {
+          return throwError(() => Error('modal still open'));
+        }
 
-      const modalState = new _ModalState(
-        componentType,
-        injector,
-        inputs
-      );
+        const injector = Injector.create({
+          name: 'Modal-Service-Injector-Wrapping-opener-injector',
+          parent: openerInjector,
+          providers: [
+          ]
+        });
 
-      this.#modalState.set(modalState);
+        const modalState = new _ModalState(
+          componentType,
+          injector,
+          inputs
+        );
 
-      return this.modalRef$.pipe(
+        this.#modalState.set(modalState);
 
-      );
-    })
+        return this.modalRef$.pipe(
+
+        );
+      }),
+    );
   }
 
   _modalInitialized(modalComponent: ModalComponent) {

@@ -1,6 +1,6 @@
 import { EnvironmentInjector, inject, Injectable } from '@angular/core';
 import { ModalService } from '../modal/modal.service';
-import { defer, switchMap } from 'rxjs';
+import { defer, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,16 +11,10 @@ export class MapOpenerService {
   readonly #injector = inject(EnvironmentInjector);
 
   openMap$() {
-    return defer(() =>
-      import('./map.component')
-    ).pipe(
-      switchMap(({ MapComponent }) =>
-        this.#modalService.open$(
-          MapComponent,
-          this.#injector,
-          {},
-        ),
-      ),
+    return this.#modalService.open$(
+      defer(() => import('./map.component')).pipe(map(m => m.MapComponent)),
+      this.#injector,
+      {},
     );
   }
 }
