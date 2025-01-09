@@ -1,8 +1,7 @@
-import { computed, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { ITimeZoneName, RegionZoneMapping } from '../types/region-zone-mapping';
 import { ColumnIdType, IZoneInfo } from '../types/zone-info';
 import { ImportExportService } from '../import-export-service/import-export.service';
-import { isPlatformServer } from '@angular/common';
 import { ZoneNormalizerService } from '../zone-normalizer-service/zone-normalizer.service';
 
 @Injectable({
@@ -11,13 +10,10 @@ import { ZoneNormalizerService } from '../zone-normalizer-service/zone-normalize
 export class ZoneService {
   readonly #zoneNormalizer = inject(ZoneNormalizerService);
   readonly #importExportService = inject(ImportExportService);
-  readonly #isServerSide = isPlatformServer(inject(PLATFORM_ID));
 
   #currentIdNumber = 0;
 
-  readonly myCldrTimezone = this.#zoneNormalizer.normalize(
-    (this.#isServerSide ? 'UTC' : Intl.DateTimeFormat().resolvedOptions().timeZone) as ITimeZoneName
-  )!;
+  readonly myBrowserTimezone = this.#zoneNormalizer.getMyBrowserTimeZone();
 
   readonly renderDate = signal(new Date(), {
     equal: (a, b) => +a === +b,
@@ -25,11 +21,7 @@ export class ZoneService {
 
   public readonly zonePickerOptionsId = 'zone-picker-options';
 
-  readonly #allBrowserZones = (
-    this.#isServerSide
-    ? new Set(['UTC'])
-    : new Set(Intl.supportedValuesOf('timeZone')).add('UTC')
-  )as ReadonlySet<ITimeZoneName>;
+  readonly #allBrowserZones = this.#zoneNormalizer.getAllBrowserZones();
 
   public readonly allZonesByRegion = computed(() => {
     const timeZones = this.#allBrowserZones;
@@ -49,7 +41,7 @@ export class ZoneService {
 
     if (validatedZones.length === 0) {
       // fallback behavior, fill in the current timezone if none others exist
-      validatedZones.push(this.myCldrTimezone);
+      validatedZones.push(this.myBrowserTimezone);
     }
 
     return new Map(
@@ -129,7 +121,7 @@ export class ZoneService {
    * Fails if the entry is not in the map, or if it is the last entry in the map.
    */
   public deleteZoneInfo(id: ColumnIdType) {
-    // currently does not decrement id counter
+    // currently does not decrement id counter, they're always unique
 
     this.#selectedZonesInfo.update(existingMap => {
       const newMap = new Map(existingMap);

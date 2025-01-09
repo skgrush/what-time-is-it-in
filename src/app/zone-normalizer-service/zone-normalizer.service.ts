@@ -1,16 +1,38 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { ITimeZoneName } from '../types/region-zone-mapping';
+import { isPlatformServer } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ZoneNormalizerService {
 
+  readonly #isServerSide = isPlatformServer(inject(PLATFORM_ID));
+
   readonly #normalizedZoneCache = new Map<ITimeZoneName, null | ITimeZoneName>();
 
   readonly browserOutputsCldrNames = (() => {
-      return this.#normalizeUncached('America/Argentina/Buenos_Aires') === 'America/Buenos_Aires';
+      return (
+        this.#normalizeUncached('America/Argentina/Buenos_Aires') === 'America/Buenos_Aires' ||
+        this.#normalizeUncached('Asia/Ho_Chi_Minh') === 'Asia/Saigon'
+      );
   })();
+
+  getMyBrowserTimeZone() {
+    if (this.#isServerSide) {
+      return 'UTC';
+    } else {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone as ITimeZoneName;
+    }
+  }
+
+  getAllBrowserZones(): ReadonlySet<ITimeZoneName> {
+    if (this.#isServerSide) {
+      return new Set(['UTC'] as const);
+    } else {
+      return new Set(Intl.supportedValuesOf('timeZone') as ITimeZoneName[]).add('UTC')
+    }
+  }
 
   /**
    * Accepts either IANA or CLDR timezone names and returns what the browser prefers.
