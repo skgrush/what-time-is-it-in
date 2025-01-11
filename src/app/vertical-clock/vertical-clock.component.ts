@@ -13,9 +13,10 @@ const hourTicks = Object.freeze(Array(maxHour - minHour).fill(0).map((_, i) => i
   styleUrl: './vertical-clock.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[style.--hour-height-px]': 'hourHeightPx + "px"',
-    '[style.--top-offset-px]': '(-1 * (seconds() / 3600 - minHour) * hourHeightPx) + "px"',
-    '[style.--hours-offset-px]': 'hoursOffset * hourHeightPx + "px"',
+    '[style.--hour-height-px.px]': 'hourHeightPx',
+    '[style.--min-hour-px.px]': 'minHour * hourHeightPx',
+    '[style.--top-offset-px.px]': '((seconds() / -3600) * hourHeightPx)',
+    '[style.--hours-offset-px.px]': 'hoursOffset * hourHeightPx',
   }
 })
 export class VerticalClockComponent {

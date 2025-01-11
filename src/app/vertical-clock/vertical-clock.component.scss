@@ -37,7 +37,7 @@ $indicator-size: 4px;
     display: grid;
     grid-template-columns: 1fr;
 
-    margin-top: calc( var(--top-offset-px) + var(--hours-offset-px));
+    margin-top: calc( var(--top-offset-px) + var(--min-hour-px) + var(--hours-offset-px));
 
     //grid-template-rows: repeat(auto-fill, );
 
