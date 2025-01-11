@@ -25,7 +25,6 @@ export function pickAColorForRangeV1(start: number, end: number) {
   const r = (rZeroTo1 * 0xFF | 0).toString(16).padStart(2, '0');
   const g = (gZeroTo1 * 0xFF | 0).toString(16).padStart(2, '0');
 
-  debugger;
   return `#${r}${g}${hexCenterStr}` as IHexColor;
 
   // what if we tried to stay inside the sphere centered at (80,80,80)?

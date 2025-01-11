@@ -180,6 +180,14 @@ export class ZoneColumnComponent {
     this.#zoneService.changeZoneInfo(id, formControlValue ?? null);
   });
 
+  scrolled(e: { readonly hours: number }) {
+    this.#zoneService.renderDate.update(date => {
+      const newDate = new Date(date);
+      newDate.setHours(newDate.getHours() + e.hours);
+      return newDate;
+    });
+  }
+
   delete() {
     if (!this.canDelete()) {
       return;

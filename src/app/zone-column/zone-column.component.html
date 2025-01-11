@@ -36,5 +36,5 @@
 </dl>
 
 @if (timeInSeconds()) {
-  <wtiii-vertical-clock [seconds]="timeInSeconds()!" [highlights]="highlights()" />
+  <wtiii-vertical-clock [seconds]="timeInSeconds()!" [highlights]="highlights()" (scrolled)="scrolled($event)" />
 }
