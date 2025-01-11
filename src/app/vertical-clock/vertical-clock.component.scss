@@ -10,6 +10,10 @@ $indicator-size: 4px;
 
   grid-template-areas: 'center';
 
+  wtiii-clock-highlight {
+    grid-area: center;
+  }
+
   .now-indicator {
     grid-area: center;
 
@@ -37,7 +41,7 @@ $indicator-size: 4px;
     display: grid;
     grid-template-columns: 1fr;
 
-    margin-top: calc( var(--top-offset-px) + var(--min-hour-px) + var(--hours-offset-px));
+    margin-top: calc( var(--local-seconds-offset) + var(--min-hour-px) + var(--hours-offset-px));
 
     //grid-template-rows: repeat(auto-fill, );
 

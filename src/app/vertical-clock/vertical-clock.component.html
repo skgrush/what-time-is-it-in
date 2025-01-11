@@ -4,7 +4,11 @@
   <div class="now-indicator-line"></div>
 </div>
 
-<div class="clock-container">
+@for (highlight of highlights(); track highlight.id) {
+  <wtiii-clock-highlight [highlight]="highlight" />
+}
+
+<div class="clock-container" [style.height.px]="clockHeight">
   @for(hourTick of hourTicks; track hourTick) {
     <time class="hour-block" [dateTime]="hourTick + ':00'">
       <div class="hour-divider"></div>

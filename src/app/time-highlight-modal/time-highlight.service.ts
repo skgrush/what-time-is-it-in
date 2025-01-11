@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { ITimeHighlight } from './time-highlight';
 import { ImportExportService } from '../import-export-service/import-export.service';
 import { timeHighlightToPeriodString } from './time-utils';
+import { pickAColorForRangeV1 } from './highlight-color';
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +60,7 @@ export class TimeHighlightService {
         id: `${this.#highlightIdPrefix}${idx + 1}`,
         start,
         end,
+        hex: pickAColorForRangeV1(start, end),
       }));
   }
 }

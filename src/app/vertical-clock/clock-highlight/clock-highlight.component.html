@@ -1,0 +1,6 @@
+@for (dup of individualRenders(); track dup.i) {
+  <div
+    [style.--highlight-render-i]="dup.i"
+    [attr.title]="dup.title"
+  ></div>
+}

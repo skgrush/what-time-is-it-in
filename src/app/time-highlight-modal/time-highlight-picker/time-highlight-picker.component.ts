@@ -10,6 +10,7 @@ import {
 } from '../time-utils';
 import { IconButtonComponent } from '../../buttons/icon-button/icon-button.component';
 import { ITimeHighlight } from '../time-highlight';
+import { pickAColorForRangeV1 } from '../highlight-color';
 
 
 
@@ -49,7 +50,6 @@ export class TimeHighlightPickerComponent {
   protected readonly invalidBecause = computed(() => {
     this.#statusChanges();
 
-    debugger;
     if (this.form.valid) {
       return null;
     }
@@ -117,6 +117,7 @@ export class TimeHighlightPickerComponent {
       id,
       start,
       end,
+      hex: pickAColorForRangeV1(start, end),
     });
   }
 

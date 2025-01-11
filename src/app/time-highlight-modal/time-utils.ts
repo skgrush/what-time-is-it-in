@@ -1,9 +1,19 @@
 import { ITimeHighlight } from './time-highlight';
 import { AbstractControl, ValidatorFn } from '@angular/forms';
+import { pickAColorForRangeV1 } from './highlight-color';
+
+/** the number of hours we show before the "now" indicator */
+export const hoursOffset = 6;
+/** pixel height of a rendered hour */
+export const hourHeightPx = 30;
+/** the earliest hour we render */
+export const minHour = -14;
+/** the last hour we render */
+export const maxHour = 24 + 14;
 
 const timeRegex = /^(\d{1,2}):(\d{2})$/;
 
-export function timeHighlightToPeriodString(highlight: ITimeHighlight) {
+export function timeHighlightToPeriodString(highlight: { readonly start: number, readonly end: number }) {
   const start = decimalHoursToTime(highlight.start);
   const end = decimalHoursToTime(highlight.end);
 
@@ -27,7 +37,6 @@ export function timeStringToDecimalHours(timeString: string) {
 }
 
 export function periodStringToTimeHighlight(id: string, period: string): ITimeHighlight {
-  debugger;
   const split = period.split('-');
   if (split.length !== 2) {
     throw new Error(`Failed to parse period ${period} containing not-exactly 2 segments.`);
@@ -40,6 +49,7 @@ export function periodStringToTimeHighlight(id: string, period: string): ITimeHi
     id,
     start,
     end,
+    hex: pickAColorForRangeV1(start, end),
   }
 }
 
@@ -62,17 +72,20 @@ export function decimalHoursToDuration(value: number): string {
   return `PT${hours}H${minutes.toString().padStart(2, '0')}M`;
 }
 
-
-export function startAndEndToDuration(startValue: number, endValue: number) {
+export function startAndEndToOrderedPair(startValue: number, endValue: number): [first: number, second: number] {
   const [first, second] =
     startValue < endValue
       ? [startValue, endValue]
       : [startValue, endValue + 24];
 
-  return second - first;
+  return [first, second];
 }
 
+export function startAndEndToDuration(startValue: number, endValue: number) {
+  const [first, second] = startAndEndToOrderedPair(startValue, endValue);
 
+  return second - first;
+}
 
 export function timeIsValid(value: number) {
   return value >= 0 && value < 24;
