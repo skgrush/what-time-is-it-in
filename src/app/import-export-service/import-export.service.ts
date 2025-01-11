@@ -4,6 +4,8 @@ import { ITimeZoneName } from '../types/region-zone-mapping';
 import { HISTORY } from '../tokens/history';
 import { CLIPBOARD } from '../tokens/clipboard';
 import { ZoneNormalizerService } from '../zone-normalizer-service/zone-normalizer.service';
+import { periodStringToTimeHighlight } from '../time-highlight-modal/time-utils';
+import { ITimeHighlight } from '../time-highlight-modal/time-highlight';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,30 @@ export class ImportExportService {
   readonly #history = inject(HISTORY);
   readonly #clipboard = inject(CLIPBOARD);
 
+  readonly #queryParams = this.#location ? new URLSearchParams(this.#location.search) : undefined;
+
   static readonly queryParamZone = 'zone';
+  static readonly queryParamTimeHighlight = 'highlight';
+
+  getValidTimeHighlightsFromQueryParams(): readonly ITimeHighlight[] {
+    const unvalidatedTimeHighlights = this.#queryParams?.getAll(ImportExportService.queryParamTimeHighlight);
+    if (!unvalidatedTimeHighlights?.length) {
+      return [];
+    }
+
+    const validatedTimeHighlights = unvalidatedTimeHighlights
+      .map((value, idx) => {
+        try {
+          return periodStringToTimeHighlight(idx.toString(), value);
+        } catch (e) {
+          console.error(e);
+          return null;
+        }
+      })
+      .filter(v => v !== null);
+
+    return validatedTimeHighlights;
+  }
 
   /**
    * Attempt to read zone= query params and filters them against the set of `allValidZones` passed in.
@@ -22,13 +47,11 @@ export class ImportExportService {
    * If global location is unreachable (e.g. server-side), returns `[]`.
    */
   getValidZonesFromQueryParams() {
-    if (!this.#location?.search.includes(`${ImportExportService.queryParamZone}=`)) {
+    const unvalidatedZones = this.#queryParams?.getAll(ImportExportService.queryParamZone) as ITimeZoneName[];
+    if (!unvalidatedZones?.length) {
       return [];
     }
 
-    const queryParams = new URLSearchParams(this.#location.search);
-
-    const unvalidatedZones = queryParams.getAll(ImportExportService.queryParamZone) as ITimeZoneName[];
     const validatedZones = unvalidatedZones.filter((z) => !!this.#zoneValidator.normalize(z));
 
     if (unvalidatedZones.length !== validatedZones.length) {
@@ -38,17 +61,30 @@ export class ImportExportService {
     return validatedZones;
   }
 
-  updatePageUrlWithZones(zones: readonly ITimeZoneName[]) {
+  updatePageUrlWithZones(
+    zones: readonly ITimeZoneName[],
+    highlights: readonly string[],
+  ) {
     if (!this.#location) {
       return;
     }
 
-    const newPathString = '/?' + new URLSearchParams(
-      zones.map(zone => [
+    const urlParts = [
+      ...zones.map(zone => [
         ImportExportService.queryParamZone,
         zone
-      ])
-    );
+      ] as const),
+      ...highlights.map(highlight => [
+        ImportExportService.queryParamTimeHighlight,
+        highlight
+      ] as const),
+    ];
+
+    // const newPathString = '/?' + new URLSearchParams(urlParts);
+
+    const newPathString = '/?' + urlParts.map(([key, value]) =>
+      `${key}=${value}`
+    ).join('&');
 
     const url = new globalThis.URL(newPathString, this.#location.origin);
 

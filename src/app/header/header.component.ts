@@ -1,10 +1,18 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  EnvironmentInjector,
+  inject,
+} from '@angular/core';
 import { ZoneService } from '../zone-service/zone.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { startWith } from 'rxjs';
+import { defer, map, startWith } from 'rxjs';
 import { IconButtonComponent } from '../buttons/icon-button/icon-button.component';
-import { MapOpenerService } from '../map/map-opener.service';
+import { ModalService } from '../modal/modal.service';
+import { ImportExportService } from '../import-export-service/import-export.service';
+import { TimeHighlightService } from '../time-highlight-modal/time-highlight.service';
 
 @Component({
   selector: 'header[wtiii-header]',
@@ -17,8 +25,11 @@ import { MapOpenerService } from '../map/map-opener.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
+  readonly #timHighlightService = inject(TimeHighlightService);
+  readonly #importExportService = inject(ImportExportService);
   readonly #zoneService = inject(ZoneService);
-  readonly #mapOpenerService = inject(MapOpenerService);
+  readonly #modalService = inject(ModalService);
+  readonly #injector = inject(EnvironmentInjector);
 
   protected readonly form = new FormGroup({
     date: new FormControl(this.#toDateTimeLocalString(this.#zoneService.renderDate()), {
@@ -28,15 +39,37 @@ export class HeaderComponent {
   readonly #dateControlChanged = toSignal(this.form.controls.date.valueChanges.pipe(startWith(this.form.controls.date.value)));
 
   openMap() {
-    this.#mapOpenerService.openMap$().subscribe();
+    this.#modalService.open$(
+      defer(() => import('../map/map.component')).pipe(map(m => m.MapComponent)),
+      this.#injector,
+      {},
+    ).subscribe();
+  }
+
+  openTimeHighlighter() {
+    this.#modalService.open$(
+      defer(() => import('../time-highlight-modal/time-highlight-modal.component')).pipe(map(m => m.TimeHighlightModalComponent)),
+      this.#injector,
+      {},
+    ).subscribe();
   }
 
   resetDate() {
     this.#zoneService.renderDate.set(new Date());
   }
 
-  copy() {
-    void this.#zoneService.copy();
+  async copy() {
+    const zones = this.#zoneService.getSelectedZonesForUrl();
+    const highlights = this.#timHighlightService.getHighlightsForUrl();
+
+    const url = this.#importExportService.updatePageUrlWithZones(
+      zones,
+      highlights,
+    );
+
+    if (url) {
+      await this.#importExportService.copyUrlToClipboard(url);
+    }
   }
 
   readonly #fx = {

@@ -1,0 +1,6 @@
+
+@for (highlight of service.highlights(); track highlight.id; let idx = $index) {
+  <wtiii-time-highlight-picker class="row" [id]="highlight.id" [timeHighlight]="highlight" (changed)="service.change(highlight, $event)" (deleted)="service.delete(highlight)" />
+}
+<hr />
+<wtiii-time-highlight-picker class="row" [id]="service.nextId()" [timeHighlight]="null" (changed)="service.add($event)" />

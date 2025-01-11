@@ -36,7 +36,6 @@ import { ZoneNormalizerService } from '../zone-normalizer-service/zone-normalize
   },
 })
 export class ZoneColumnComponent {
-
   readonly #zoneService = inject(ZoneService);
   readonly #zoneValidator = inject(ZoneNormalizerService);
   readonly #intlLocale = inject(INTL_LOCALE);

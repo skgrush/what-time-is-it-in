@@ -1,0 +1,41 @@
+<label>
+  Start:
+  <input
+    type="range"
+    min="0"
+    max="24"
+    step="0.01666666666"
+    [formControl]="form.controls.start"
+  />
+  <time [dateTime]="startValueString()">{{ startValueString() }}</time>
+</label>
+
+<label>
+  End:
+  <input
+    type="range"
+    min="0"
+    max="24"
+    step="0.01666666666"
+    [formControl]="form.controls.end"
+  />
+  <time [dateTime]="endValueString()">{{ endValueString() }}</time>
+</label>
+
+<label>
+  Duration:
+  <time class="duration" [dateTime]="duration().isoDuration">
+    {{ duration().durationString }}
+  </time>
+</label>
+
+@if (canSubmit()) {
+  <button (click)="submit()" wtiii-icon-button="Save">
+    {{ timeHighlight() ? 'check' : 'add' }}
+  </button>
+} @else {
+  <button disabled (click)="submit()" [wtiii-icon-button]="invalidBecause() ?? '???'">
+    unpublished
+  </button>
+}
+<button [disabled]="!canDelete()" (click)="delete()" wtiii-icon-button="Delete">delete</button>

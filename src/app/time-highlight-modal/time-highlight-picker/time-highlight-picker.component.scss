@@ -1,0 +1,18 @@
+:host {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  column-gap: 1em;
+
+  & > label {
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+
+    time {
+      display: inline-block;
+      text-align: right;
+      width: 5ch;
+    }
+  }
+}
