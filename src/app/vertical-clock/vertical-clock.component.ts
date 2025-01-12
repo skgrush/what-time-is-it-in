@@ -94,7 +94,7 @@ class TouchHandler {
       ...state,
       lastSetPositionY: newPixelPosition,
     };
-    this.#scrolled.emit({ hours: scrollCount });
+    this.#scrolled.emit({ hours: -scrollCount });
   }
 }
 
