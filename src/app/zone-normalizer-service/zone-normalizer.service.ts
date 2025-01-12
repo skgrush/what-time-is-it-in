@@ -11,6 +11,8 @@ export class ZoneNormalizerService {
 
   readonly #normalizedZoneCache = new Map<ITimeZoneName, null | ITimeZoneName>();
 
+  readonly initialDate = this.#isServerSide ? new Date(946684800000) : new Date();
+
   readonly browserOutputsCldrNames = (() => {
       return (
         this.#normalizeUncached('America/Argentina/Buenos_Aires') === 'America/Buenos_Aires' ||

@@ -15,7 +15,7 @@ export class ZoneService {
 
   readonly myBrowserTimezone = this.#zoneNormalizer.getMyBrowserTimeZone();
 
-  readonly renderDate = signal(new Date(), {
+  readonly renderDate = signal(this.#zoneNormalizer.initialDate, {
     equal: (a, b) => +a === +b,
   });
 
