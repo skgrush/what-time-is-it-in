@@ -38,6 +38,7 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  overscroll-behavior: none; // (try to) prevent pull-to-refresh
 
   input {
     font-size: var(--font-size-ui);
