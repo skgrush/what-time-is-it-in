@@ -2,7 +2,7 @@
   display: grid;
   grid-auto-flow: column;
   align-items: center;
-  column-gap: 1em;
+  column-gap: var(--gap-2);
 
   & > label {
     display: grid;
@@ -12,7 +12,7 @@
     time {
       display: inline-block;
       text-align: right;
-      width: 5ch;
+      width: 5ch; // max width of the monospace characters
     }
   }
 }

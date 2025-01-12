@@ -15,6 +15,6 @@
     height: calc(var(--end-in-px) - var(--start-in-px));
     background-color: var(--highlight-color);
 
-    opacity: 0.4;
+    opacity: var(--highlight-opacity);
   }
 }

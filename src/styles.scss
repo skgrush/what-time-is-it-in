@@ -17,10 +17,13 @@
   --text-color-1: #BBB;
   --text-color-2: #CCC;
 
+  --foreground-color-1: #444;
+
   --gap-1: 0.5rem;
   --gap-2: 1em;
 
   --border-size-1: 0.5px;
+  --border-size-3: 2px;
 
   --border-radius-1: 4px;
 
@@ -29,6 +32,8 @@
   --button-size: 1.5em;
 
   --highlight-opacity: 0.4;
+
+  --now-indicator-thickness: 2px;
 
   accent-color: var(--accent-color);
 }

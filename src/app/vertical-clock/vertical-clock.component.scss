@@ -1,6 +1,4 @@
 
-$indicator-size: 4px;
-
 :host {
   display: grid;
   overflow: hidden;
@@ -23,17 +21,17 @@ $indicator-size: 4px;
     grid-template-areas: 'center';
     height: 0;
     width: 100%;
-    margin-top: calc(var(--hours-offset-px) - #{$indicator-size});
+    margin-top: calc(var(--hours-offset-px) - 2 * var(--now-indicator-thickness));
     .now-indicator-line {
       grid-area: center;
       align-self: center;
-      border-top: 2px solid var(--accent-color);
+      border-top: var(--now-indicator-thickness) solid var(--accent-color);
     }
     .now-indicator-circle {
       grid-area: center;
       justify-self: start;
-      border-radius: $indicator-size;
-      border: $indicator-size solid var(--accent-color);
+      border-radius: calc(var(--now-indicator-thickness) * 2);
+      border: calc(var(--now-indicator-thickness) * 2) solid var(--accent-color);
     }
   }
 
@@ -56,7 +54,7 @@ $indicator-size: 4px;
         grid-area: center;
 
         height: 0;
-        border-top: 2px double lightgray;
+        border-top: var(--border-size-3) double lightgray;
       }
       .hour-block-label {
         grid-area: center;
