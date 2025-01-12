@@ -18,8 +18,17 @@
   --text-color-2: #CCC;
 
   --gap-1: 0.5rem;
+  --gap-2: 1em;
+
+  --border-size-1: 0.5px;
+
+  --border-radius-1: 4px;
 
   --zone-column-width: 13rem;
+
+  --button-size: 1.5em;
+
+  --highlight-opacity: 0.4;
 
   accent-color: var(--accent-color);
 }
@@ -53,7 +62,7 @@ input, button {
 
 input {
   border: gray inset 2px;
-  border-radius: 4px;
+  border-radius: var(--border-radius-1);
 
   &.ng-invalid.ng-touched {
     border-color: var(--error-color);

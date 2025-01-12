@@ -8,8 +8,8 @@
   grid-template-columns: 1fr;
   grid-template-rows: min-content min-content 1fr;
 
-  border: solid white 0.5px;
-  border-radius: 4px;
+  border: solid white var(--border-size-1);
+  border-radius: var(--border-radius-1);
   padding: var(--gap-1);
 }
 
