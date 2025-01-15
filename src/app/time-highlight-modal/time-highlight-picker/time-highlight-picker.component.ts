@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -11,6 +11,8 @@ import {
 import { IconButtonComponent } from '../../buttons/icon-button/icon-button.component';
 import { ITimeHighlight } from '../time-highlight';
 import { pickAColorForRangeV1 } from '../highlight-color';
+import { AccessibleRangeInputComponent } from '../accessible-range-input/accessible-range-input.component';
+import { TimeHighlightModalResizeService } from '../time-highlight-modal-resize.service';
 
 
 
@@ -19,15 +21,19 @@ import { pickAColorForRangeV1 } from '../highlight-color';
   imports: [
     ReactiveFormsModule,
     IconButtonComponent,
+    AccessibleRangeInputComponent,
   ],
   templateUrl: './time-highlight-picker.component.html',
   styleUrl: './time-highlight-picker.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.id]': 'id',
+    '[attr.modal-size]': 'timeHighlightResize.modalSizeBoundary()',
   }
 })
 export class TimeHighlightPickerComponent {
+
+  protected readonly timeHighlightResize = inject(TimeHighlightModalResizeService);
 
   readonly id = input.required<string>();
 

@@ -1,7 +1,14 @@
 :host {
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: repeat(auto-fill, min-content);
+  //grid-template-columns: 1fr;
+  //grid-template-rows: repeat(auto-fill, min-content);
+  grid-auto-flow: row;
+
+  //container-name: highlightmodal;
+  //container-type: inline-size;
+  //width: min(580px, calc(100vw - 3em));
+
+  overflow: hidden;
 
   & > hr {
     width: 100%;

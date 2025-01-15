@@ -1,5 +1,8 @@
 :host {
 
+  // TODO: better width
+  width: unset;
+
   &[open] {
     display: grid;
     grid-template-rows: min-content;

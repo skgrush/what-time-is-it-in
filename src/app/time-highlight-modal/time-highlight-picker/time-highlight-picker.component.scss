@@ -4,15 +4,35 @@
   align-items: center;
   column-gap: var(--gap-2);
 
+  overflow: hidden;
+
   & > label {
     display: grid;
     grid-auto-flow: column;
     align-items: center;
 
+    & > wtiii-accessible-range-input {
+      width: 120px;
+    }
+
     time {
       display: inline-block;
       text-align: right;
       width: 5ch; // max width of the monospace characters
+    }
+  }
+
+  &[modal-size="small"] {
+
+    grid-template-columns: min-content min-content min-content min-content;
+    justify-content: space-around;
+
+    & > label {
+      grid-auto-flow: row;
+
+      & > wtiii-accessible-range-input {
+        width: 100px;
+      }
     }
   }
 }

@@ -1,0 +1,23 @@
+<input [hidden]="type() === 'time'"
+  type="range"
+  min="0"
+  max="24"
+  step="0.01666666666"
+  [formControl]="control()"
+  (focus)="onFocusRange($event)"
+  (click)="onClick($event)"
+/>
+
+<!--@if (type() === 'time') {-->
+  <input
+    #timeInput
+    [hidden]="type() !== 'time'"
+    type="time"
+    min="00:00"
+    max="23:59"
+    step="1"
+    [value]="formControlAsDate()"
+    (input)="onChangeTime($event)"
+    (blur)="onBlurTime($event)"
+  />
+<!--}-->
