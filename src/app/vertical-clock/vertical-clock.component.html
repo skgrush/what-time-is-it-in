@@ -9,7 +9,7 @@
 }
 
 <div class="clock-container" [style.height.px]="clockHeight">
-  @for(hourTick of hourTicks; track hourTick) {
+  @for(hourTick of hourTicks; track $index) {
     <time class="hour-block" [dateTime]="hourTick + ':00'">
       <div class="hour-divider"></div>
       <span class="hour-block-label">{{ hourTick }}</span>

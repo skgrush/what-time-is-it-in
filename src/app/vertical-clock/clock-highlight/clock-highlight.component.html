@@ -1,4 +1,4 @@
-@for (dup of individualRenders(); track dup.i) {
+@for (dup of individualRenders(); track $index) {
   <div
     [style.--highlight-render-i]="dup.i"
     [attr.title]="dup.title"
