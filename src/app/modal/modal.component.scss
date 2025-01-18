@@ -10,7 +10,7 @@
   overflow: hidden;
 
   &::backdrop {
-    background-color: rgb(0 0 0 / 0%);
+    background-color: var(--backdrop-color--transparent);
 
     transition: all 0.7s;
 
@@ -20,7 +20,7 @@
   }
 
   &[open]::backdrop {
-    background-color: rgb(0 0 0 / 75%);
+    background-color: var(--backdrop-color)
   }
 }
 
@@ -28,6 +28,6 @@
   because the nesting selector cannot represent pseudo-elements. */
 @starting-style {
   :host[open]::backdrop {
-    background-color: rgb(0 0 0 / 0%);
+    background-color: var(--backdrop-color-transparent);
   }
 }

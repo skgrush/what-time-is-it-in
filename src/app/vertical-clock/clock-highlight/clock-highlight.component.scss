@@ -4,6 +4,9 @@
   grid-template-areas: 'center';
 
   & > div {
+    // color of these divs matters
+    forced-color-adjust: none;
+
     grid-area: center;
     --24hr-offset: var(--highlight-render-i) * 24 * var(--hour-height-px);
 

@@ -8,16 +8,15 @@
   --font-family: "Courier New", monospace;
   --font-size-ui: 16px;
   --font-size-text: 12px;
+
+  color-scheme: dark;
   --accent-color: green;
-  //--background-color-1: #222;
-  //--background-color-2: #333;
-
   --error-color: red;
-
   --text-color-1: #BBB;
   --text-color-2: #CCC;
-
   --foreground-color-1: #444;
+  --backdrop-color: rgb(0 0 0 / 75%);
+  --backdrop-color-transparent: rgb(0 0 0 / 0%);
 
   --gap-1: 0.5rem;
   --gap-2: 1em;
@@ -36,13 +35,18 @@
   --now-indicator-thickness: 2px;
 
   accent-color: var(--accent-color);
+
+  @media (prefers-contrast: more) {
+    --text-color-1: #FFF;
+    --text-color-2: #EEE;
+
+  }
 }
 
 html, body {
   font-family: var(--font-family);
   font-size: var(--font-size-text);
 
-  color-scheme: dark;
   //background-color: var(--background-color-1);
   color: var(--text-color-1);
 
